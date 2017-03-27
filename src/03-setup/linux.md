@@ -128,7 +128,7 @@ EOL
 
 Now check the results:
 
-``
+```
 $ cat /etc/udev/rules.d/99-openocd.rules
 # STM32F3DISCOVERY rev A/B - ST-LINK/V2
 ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", GROUP="dialout"
