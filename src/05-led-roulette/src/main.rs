@@ -2,14 +2,21 @@
 #![no_main]
 #![no_std]
 
+#[macro_use]
 extern crate pg;
+
+use pg::delay;
+use pg::led::LEDS;
 
 #[inline(never)]
 #[no_mangle]
 pub fn main() -> ! {
-    let y;
-    let x = 42;
-    y = x;
+    iprintln!("Hello, world!");
 
-    loop {}
+    loop {
+        delay::ms(1_000);
+        LEDS[0].on();
+        delay::ms(1_000);
+        LEDS[0].off();
+    }
 }

@@ -6,5 +6,13 @@ version = "0.1.0"
 [dependencies]
 pg = { path = "pg" }
 
+[dependencies.f3]
+default-features = false
+features = [
+  "default-exception-handler",
+  "default-panic-fmt"
+]
+version = "0.3.0"
+
 [profile.release]
 lto = true

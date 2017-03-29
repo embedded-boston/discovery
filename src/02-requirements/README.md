@@ -47,6 +47,7 @@ Here are the materials we will be using:
       part of an on-board programmer and debugger named ST-LINK and is connected to
       the USB port named "USB ST-LINK".
   - [Datasheet](http://www.st.com/content/ccc/resource/technical/document/datasheet/2c/6f/d7/64/1f/a3/4f/c9/DM00118585.pdf/files/DM00118585.pdf/jcr:content/translations/en.DM00118585.pdf)
+  - [Reference Manual](http://www.st.com/content/ccc/resource/technical/document/reference_manual/4a/19/6e/18/9d/92/43/32/DM00043574.pdf/files/DM00043574.pdf/jcr:content/translations/en.DM00043574.pdf)
   - [Nucleo User Manual](http://www.st.com/content/ccc/resource/technical/document/user_manual/98/2e/fa/4b/e0/82/43/b7/DM00105823.pdf/files/DM00105823.pdf/jcr:content/translations/en.DM00105823.pdf)
 - One mini-B USB cables. One is required to make the STM32 NUCLEO board
   work.
