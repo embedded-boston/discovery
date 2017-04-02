@@ -3,11 +3,9 @@
 
 Alright, let's start by building the following application:
 
-<!-- replace this -->
 <p align="center">
-<img src="https://i.imgur.com/0k1r2Lc.gif">
+<img src="http://i.imgur.com/41n82mp.mp4">
 </p>
-<!-- end replace -->
 
 We are going to start off with a high-level API to implement this very simple
 program, but we will get into some of the details in the next section. The
@@ -58,6 +56,7 @@ are doesn't matter. The only practical implication of all this is that you can't
 return from the `main` function.
 
 If you are a careful observer, you'll also notice there is a `.cargo` directory
-in the Cargo project as well. `:-)`
+in the Cargo project as well. This specifies some build time arguments, including
+the linker file we will be using.
 
 Alright, let's start by building this program.

@@ -19,8 +19,9 @@ Breakpoint 1 at 0x80001e6: file $PWD/src/main.rs, line 9.
 Continuing.
 Note: automatically using hardware breakpoints for read-only addresses.
 
-Breakpoint 1, led_roulette::main () at $PWD/src/main.rs:7
-7       pub fn main() -> ! {
+Breakpoint 1, blink::main ()
+    at /home/cwoodall/workspace/personal/discovery/src/04-blink/src/main.rs:19
+19	    let mut state: bool = false;
 ```
 
 Breakpoints can be used to stop the normal flow of a program. The `continue`
@@ -38,7 +39,7 @@ For a nicer debugging experience, we'll be using GDB's Text User Interface
 ```
 
 > **NOTE** Apologies Windows users. The GDB shipped with the GNU ARM Embedded
-> Toolchain doesn't support this TUI mode `:-(`.
+> Toolchain doesn't support this TUI mode.
 
 ![GDB session](assets/gdb-layout-src.png "GDB TUI")
 
@@ -49,73 +50,78 @@ At any point you can leave the TUI mode using the following command:
 ```
 
 OK. We are now at the beginning of `main`. We can advance the program statement
-by statement using the `step` command. So let's use that twice to reach the `y =
-x` statement.
+by statement using the `step`  and `next` (steps over functions) commands. So
+let's use `next` three times that twice to reach the `loop {` statement.
 
 ```
-(gdb) step
-11          let x = 42;
-
-(gdb) step
-12          y = x;
+(gdb) n
+15	    let led: gpio::Gpio = gpio::Gpio::new(5, gpio::GpioBank::A, gpio::GpioDirection::Out);
+(gdb) n
+19	    let mut state: bool = false;
+(gdb) n
+21	    loop {
 ```
 
-If you are not using the TUI mode, on each `step` call GDB will print back the
-current statement along with its line number.
+If you are not using the TUI mode, on each `next` or `step` call GDB will print
+back the current statement along with its line number.
 
-We are now "on" the `y = x` statement; that statement hasn't been executed yet.
-This means that `x` is initialized but `y` is not. Let's inspect those
+We are now "on" the `loop` statement; that statement hasn't been executed yet.
+This means that `led` and `state` are initialized. Let's inspect those
 stack/local variables using the `print` command:
 
 ```
-(gdb) print x
-$1 = 42
-
-(gdb) print &x
-$2 = (i32 *) 0x20009ff0
-
-(gdb) print y
-$3 = 134218195
-
-(gdb) print &y
-$4 = (i32 *) 0x20009ff4
+(gdb) print led
+$1 = {
+  pin = 5 '\005',
+  bank = A
+}
+(gdb) print state
+$2 = false
+(gdb) print &led
+$3 = (struct Gpio *) 0x20009fdc
+(gdb) print & state
+$4 = (bool *) 0x20009fe3
 ```
 
-As expected, `x` contains the value `42`. `y`, however, contains the value
-`134218195` (?). Because `y` is uninitialized, it contains some random value.
+Interestingly it prints the struct correctly!
 
-The command `print &x` prints the address of the variable `x`. The interesting
-bit here is that GDB output shows the type of the reference: `i32*`, a pointer
-to an `i32` value. Another interesting thing is that the addresses of `x` and
-`y` are very close to each other: just off by `4`.
+The command `print &led` prints the address of the variable `led`. The interesting
+bit here is that GDB output shows the type of the reference: `struct Gpio*`, a
+pointer to an `i32` value. Another interesting thing is that the addresses of `led`
+and `state` are very close to each other.
 
 Instead of printing the local variables one by one, you can also use the `info
 locals` command:
 
 ```
 (gdb) info locals
-x = 42
-y = 134218195
+state = false
+led = {
+  pin = 5 '\005',
+  bank = A
+}
 ```
 
 OK. With another `step`, we'll be on top of the `loop {}` statement:
 
 ```
-(gdb) step
-13          loop {}
+(gdb) s
+23	        delay::ms(1_000);
 ```
 
-And `y` should now be initialized.
+And we are ready to start blinking (in just a second). We will use the
+`continue` command to start running the program.
 
 ```
-(gdb) print y
-$5 = 42
+(gdb) continue
+Continuing.
 ```
 
-If we use `step` again on top of the `loop {}` statement, we'll get stuck
-because the program will never pass that statement. Instead, we'll switch to the
-disassemble view with the `layout asm` command and advance one instruction at a
-time using `stepi`.
+You should now see the led blinking on and off in 1 second intervals. Yay!
+
+
+We can also switch to the disassemble view with the `layout asm` command and
+advance one instruction at a time using `stepi`.
 
 > **NOTE** If you used the `step` command by mistake and GDB got stuck, you can
 > unstuck it by hitting `Ctrl+C`.
@@ -176,13 +182,14 @@ Unable to match requested speed 1000 kHz, using 950 kHz
 adapter speed: 950 kHz
 target state: halted
 target halted due to debug-request, current mode: Thread
-xPSR: 0x01000000 pc: 0x08000194 msp: 0x2000a000
-
-(gdb) continue
+xPSR: 0x01000000 pc: 0x08000040 msp: 0x2000a000
+(gdb) c
 Continuing.
 
-Breakpoint 1, led_roulette::main () at $PWD/src/main.rs:7
-7       pub fn main() -> ! {
+Breakpoint 1, blink::main ()
+    at /home/cwoodall/workspace/personal/discovery/src/04-blink/src/main.rs:19
+19	    let mut state: bool = false;
+(gdb)
 ```
 
 We are now back at the beginning of `main`!
@@ -210,11 +217,12 @@ A debugging session is active.
         Inferior 1 [Remote target] will be detached.
 
 Quit anyway? (y or n) y
-Detaching from program: $PWD/target/thumbv7em-none-eabihf/debug/led-roulette, Remote target
+Detaching from program: $PWD/target/thumbv7em-none-eabihf/debug/blink, Remote target
 Ending remote debugging.
 ```
 
 Don't close OpenOCD though! We'll use it again and again later on. It's better
 just to leave it running.
 
-What's next? The high level API I promised.
+Now lets play around and get people up to speed! Next (if we have time) we will
+delve a little deeper and maybe even experiment with some inputs!
