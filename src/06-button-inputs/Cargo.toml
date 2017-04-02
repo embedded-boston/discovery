@@ -1,6 +1,6 @@
 [package]
-authors = ["Jorge Aparicio <japaricious@gmail.com>"]
-name = "leds-again"
+authors = ["Chris Woodall <chris.j.woodall@gmail.com>"]
+name = "button-blink"
 version = "0.1.0"
 
 [dependencies]
