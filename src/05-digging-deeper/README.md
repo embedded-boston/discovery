@@ -73,3 +73,7 @@ configuration is known as digital output.
 ---
 
 OK. But how can one find out what this register does? Time to RTRM!
+
+
+## Finding the linker file
+target/thumbv7em-none-eabihf/debug/build/f3-89053c6e8fb224bb/out

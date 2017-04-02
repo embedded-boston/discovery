@@ -1,16 +1,20 @@
-# LED roulette
+# Blinking An LED
+> The "Hello, World" of Embedded Systems Programming.
 
 Alright, let's start by building the following application:
 
+<!-- replace this -->
 <p align="center">
 <img src="https://i.imgur.com/0k1r2Lc.gif">
 </p>
+<!-- end replace -->
 
-I'm going to give you a high level API to implement this app but don't worry
-we'll do low level stuff later on. The main goal of this chapter is to get
-familiar with the "flashing" and debugging process.
+We are going to start off with a high-level API to implement this very simple
+program, but we will get into some of the details in the next section. The
+main goal is to get familiar with building a Rust program, loading it and
+debugging it.
 
-Throughout this text we'll be using the starter code that's in the [discovery]
+Throughout this text we'll be using the starter code that's in the [tutorial-bring-and-blink-rust]
 repository. Make sure you always have the latest version of the master branch
 because this website tracks that branch.
 
@@ -18,24 +22,33 @@ The starter code is in the `src` directory of that repository. Inside that
 directory there more directories named after each chapter of this book. Most of
 those directories are starter Cargo projects.
 
-[discovery]: https://github.com/japaric/discovery
+[tutorial-bring-and-blink-rust]: https://embedded-boston.github.io/tutorial-bring-and-blink-rust/
 
-Now, jump into the `src/05-led-roulette` directory. Check the `src/main.rs`
+Now, jump into the `src/04-blink` directory. Check the `src/main.rs`
 file:
 
 ``` rust
-#![no_std]
+#![deny(unsafe_code)]
 #![no_main]
+#![no_std]
 
+#[macro_use]
 extern crate pg;
 
+use pg::delay;
+use pg::gpio;
+
+#[inline(never)]
 #[no_mangle]
 pub fn main() -> ! {
-    let y;
-    let x = 42;
-    y = x;
+    let led: gpio::Gpio = gpio::Gpio::new(5, gpio::GpioBank::A, gpio::GpioDirection::Out);
+    let mut state: bool = false;
 
-    loop {}
+    loop {
+        delay::ms(1_000);
+        led.write(state);
+        state = !state;
+    }
 }
 ```
 

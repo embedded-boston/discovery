@@ -23,19 +23,16 @@ the `core` crate for us:
 
 ```
 $ xargo build --target thumbv7em-none-eabihf
-   Compiling core v0.0.0 (file://$SYSROOT/lib/rustlib/src/rust/src/libcore)
-   Compiling alloc v0.0.0 (file://$SYSROOT/lib/rustlib/src/rust/src/liballoc)
-   Compiling rustc_unicode v0.0.0 (file://$SYSROOT/lib/rustlib/src/rust/src/librustc_unicode)
-   Compiling collections v0.0.0 (file://$SYSROOT/lib/rustlib/src/rust/src/libcollections)
-   Compiling rand v0.0.0 (file://$SYSROOT/lib/rustlib/src/rust/src/librand)
-   Compiling f3 v0.3.0
    Compiling rlibc v1.0.0
-   Compiling r0 v0.1.0
    Compiling volatile-register v0.1.2
-   Compiling cortex-m v0.1.4
+   Compiling ref_slice v1.1.1
+   Compiling f3 v0.3.0
+   Compiling cortex-m v0.1.6
+   Compiling stm32f30x-memory-map v0.1.2
    Compiling compiler-builtins-snapshot v0.0.20161008+c56faf22abb39724008148d58f12bcd43b6d236b
-   Compiling pg v0.1.0 (file://$SYSROOT/04-led-roulette/pg)
-   Compiling led-roulette v0.1.0 (file://$SYSROOT/04-led-roulette)
+   Compiling pg v0.1.0 (file:///home/cwoodall/workspace/personal/discovery/src/04-blink/pg)
+   Compiling blink v0.1.0 (file:///home/cwoodall/workspace/personal/discovery/src/04-blink)
+    Finished dev [unoptimized + debuginfo] target(s) in 4.45 secs
 ```
 
 > **NOTE** Be sure to compile this crate *without* optimizations
@@ -48,16 +45,16 @@ the produced executable is actually an ARM binary:
 
 ```
 # *nix only
-$ file target/thumbv7em-none-eabihf/debug/led-roulette
-led-roulette: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped
-                                         ~~~  ~~~~~                   ~~~~~~~~~~~~~~~~~
+$ file target/thumbv7em-none-eabihf/debug/blink
+blink: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped
+                                  ~~~  ~~~~~                   ~~~~~~~~~~~~~~~~~
 ```
 
 Another way to do that is to use `readelf` because the executable produced by
 `rustc` is actually an ELF (Executable and Linkable Format) file.
 
 ```
-$ arm-none-eabi-readelf -h target/thumbv7em-none-eabihf/debug/led-roulette
+$ arm-none-eabi-readelf -h target/thumbv7em-none-eabihf/debug/blink
 ELF Header:
   Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
   Class:                             ELF32

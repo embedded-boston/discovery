@@ -4,9 +4,9 @@ Flashing is the process of moving our program into the microcontroller's
 (persistent) memory. Once flashed, the microcontroller will executed the flashed
 program everytime is powered on.
 
-In this case, our `led-roulette` program will be the *only* program in the
+In this case, our `blink` program will be the *only* program in the
 microcontroller memory. By this I mean that there's nothing else running on the
-microcontroller: no OS, no "daemon", nothing. `led-roulette` has full control
+microcontroller: no OS, no "daemon", nothing. `blink` has full control
 over the device.
 
 Onto the actual flashing. First thing we need is to do is launch OpenOCD.
@@ -89,8 +89,8 @@ I mentioned that OpenOCD provides a GDB server so let's connect to that right
 now:
 
 ```
-$ arm-none-eabi-gdb -q target/thumbv7em-none-eabihf/debug/led-roulette
-Reading symbols from target/thumbv7em-none-eabihf/debug/led-roulette...done.
+$ arm-none-eabi-gdb -q target/thumbv7em-none-eabihf/debug/blink
+Reading symbols from target/thumbv7em-none-eabihf/debug/blink...done.
 (gdb)
 ```
 

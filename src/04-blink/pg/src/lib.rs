@@ -5,6 +5,8 @@
 #![feature(macro_reexport)]
 #![no_std]
 
+pub mod gpio;
+
 #[macro_reexport(bkpt, iprint, iprintln)]
 #[macro_use]
 extern crate f3;
@@ -15,17 +17,12 @@ pub use f3::delay;
 #[doc(hidden)]
 pub use f3::itm;
 
-/// LEDs
-pub mod led {
-    pub use f3::led::{LEDS, Led};
-}
 
 #[doc(hidden)]
 #[export_name = "_init"]
 pub unsafe fn init() {
     f3::delay::init();
     f3::led::init();
-    f3::itm::init();
 }
 
 #[doc(hidden)]
