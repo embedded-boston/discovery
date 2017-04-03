@@ -104,3 +104,19 @@ applications usually have an USB connector because USB is an ubiquitous
 protocol in PCs and smartphones. Whereas inside cars you'll find plenty of CAN
 "buses". Some digital sensors use SPI, others use I2C and others, SMBUS.
 Etcetera.
+
+## Interrupts
+
+Interrupts are a key part of designing good embedded systems and make
+asyncronous operations possible. I put together a quick example of a
+pin change interrupt ([github](https://github.com/cwoodall/stm32f303-rust-pinchange-interrupt)),
+but there are other interrupts to be made. One of the key limiting factors is
+improving tools and libraries supporting these interactions such as
+[f3](http://github.com/japaric/f3) and
+[stm32f303x-memory-map](https://github.com/cwoodall/stm32f303x-memory-map)/
+[stm32f30x-memory-map](http://github.com/japaric/stm32f30x-memory-map).
+
+## More Rust
+
+I highly recommend learning more about Rust with the excellent resources that
+the community has put together such as [The Rust Programming Language](https://doc.rust-lang.org/book/)
