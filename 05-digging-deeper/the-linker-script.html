@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html" class="active"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>The Linker Script</h1>
+<p>The more seasoned embedded engineers here are questioning where the linker
+script is. Well the .cargo/config file tells you the name of the linker
+script but not the location, it ends up being put inside of the build directory
+and is built by the <code>f3</code> crate. Thus it is in:
+<code>target/thumbv7em-none-eabihf/debug/build/f3-&lt;some hash&gt;/out</code>. The linker
+script is actually being generated by a <code>build.rs</code> file which is run by
+cargo on compilation.</p>
+<p>So lets take a look at the linker file we have been using:</p>
+<pre><code>MEMORY
+{
+  CCRAM : ORIGIN = 0x10000000, LENGTH = 8K
+  FLASH : ORIGIN = 0x08000000, LENGTH = 256K
+  RAM : ORIGIN = 0x20000000, LENGTH = 40K
+}
+
+ENTRY(_reset)
+
+SECTIONS
+{
+  .text ORIGIN(FLASH) :
+  {
+    /* Vector table */
+    LONG(ORIGIN(RAM) + LENGTH(RAM));
+    LONG(_reset + 1);
+    KEEP(*(.rodata._EXCEPTIONS));
+    _eexceptions = .;
+    /* Entry point: reset handler */
+    _reset = .;
+    *(.text._reset);
+
+    *(.text.*);
+    *(.rodata.*);
+  } &gt; FLASH
+  /DISCARD/ :
+  {
+    *(.ARM.exidx.*)
+    *(.bss.*)
+    *(.data.*)
+  }
+}
+
+/* HACK to make these symbols overrideable by _dependencies_ (they were
+   already overridable by the top crate), we declare them as undefined
+   (EXTERN) here. */
+EXTERN(__aeabi_memclr4);
+EXTERN(_default_exception_handler);
+EXTERN(_init);
+
+/* Exceptions */
+PROVIDE(_nmi = _default_exception_handler);
+PROVIDE(_hard_fault = _default_exception_handler);
+PROVIDE(_memmanage_fault = _default_exception_handler);
+PROVIDE(_bus_fault = _default_exception_handler);
+PROVIDE(_usage_fault = _default_exception_handler);
+PROVIDE(_svcall = _default_exception_handler);
+PROVIDE(_pendsv = _default_exception_handler);
+PROVIDE(_systick = _default_exception_handler);
+ASSERT(_eexceptions - ORIGIN(FLASH) == 0x40, &quot;exceptions not linked where expected&quot;);
+</code></pre>
+<p>It is pretty standard, and chanes depending on the options passed to f3 in the
+Cargo.toml file. For example, if we enable <code>interrupts</code> all of the interrupt
+vectors will get <code>_default_handlers</code> which can be overrided. This linker script
+is actually rather useful; however one day you may need to edit it yourself,
+we are not going to handle that right now though. For more information you
+should look at the <a href="http://github.com/japaric/f3">f3</a> repository.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="05-digging-deeper/type-safe-manipulation.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="06-button-inputs/README.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="05-digging-deeper/type-safe-manipulation.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="06-button-inputs/README.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

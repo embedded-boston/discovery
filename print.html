@@ -1,0 +1,1951 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Boston Embdded Systems Meetup: Bring and Blink</h1>
+<blockquote>
+<p>Discover the world of microcontrollers through <a href="https://www.rust-lang.org/en-US/">Rust</a>!</p>
+</blockquote>
+<p>This book is an edited version for the Boston Embedded Systems Meetup and is
+based on <a href="http://japaric.github.io/discovery">japaric's <code>discovery</code> book</a>.
+This book is for an &quot;introductory tutorial&quot; on microcontroller-based &quot;embedded
+systems&quot; that uses Rust as the teaching language rather than the usual C/C++.</p>
+<h2>Scope</h2>
+<p>The following topics will be covered in this tutorial:</p>
+<ul>
+<li>
+<p>How to write, build, flash and debug an &quot;embedded&quot; (Rust) program.</p>
+</li>
+<li>
+<p>How to make LEDs blink, print messages over JTAG using itm, and some basic
+Rust.</p>
+</li>
+</ul>
+<h2>Approach</h2>
+<ul>
+<li>
+<p>Beginner friendly. No previous experience with microcontrollers or embedded
+systems is required.</p>
+</li>
+<li>
+<p>Hands on. Plenty of exercises to put the theory into practice. <em>You</em> will be
+doing most of the work here.</p>
+</li>
+<li>
+<p>Tool centered. We'll make plenty use of tooling to ease development. &quot;Real&quot;
+debugging, GDB, and logging will be introduced early on. Using LEDs as a
+debugging mechanism has no place here.</p>
+</li>
+</ul>
+<h2>Non-goals</h2>
+<p>What's out of scope for this tutorial:</p>
+<ul>
+<li>
+<p>Teaching Rust in depth. There is plenty of material, and the officia <a href="https://doc.rust-lang.org/book/">Rust
+Programming Language Book</a> is a great place
+to start.</p>
+</li>
+<li>
+<p>Being a comprehensive introduction about electric circuit theory or
+electronics. We'll just cover the minimum required to understand how some
+devices work (if at all).</p>
+</li>
+<li>
+<p>Covering Rustic, low-level details. We won't be talking about linker scripts,
+the boot process or how to glue those two into a minimally working Rust
+program. The <a href="https://japaric.github.io/copper/">Copper</a> book has information on those topics though.</p>
+</li>
+<li>
+<p>Working with peripherals or anything more complicated than LEDs and basic
+Rust programs the <a href="https://japaric.github.io/discovery/">Discovery</a> book is a great place to go after this book and
+will keep you going. (Thanks japaric!)</p>
+</li>
+<li>
+<p>Being a general reference for programming microcontrollers. The intent is to
+get a handful of people up and running in a short period of time! Depth is
+not our aim!</p>
+</li>
+</ul>
+<h2>Thanks To:</h2>
+<ul>
+<li>Canopy: for allowing us to use their space.</li>
+<li>japaric: for writing a majority of the content.</li>
+</ul>
+<h3>Original Sponsors of the Discovery book</h3>
+<p>This tutorial is based on japric's Discovery book which was sponsored by:</p>
+<p align="center">
+<a href="http://integer32.com/">
+<img style="width: 50%" title="integer 32" src="assets/integer32.svg">
+</a>
+</p>
+<p>Many thanks to <a href="http://integer32.com/">integer 32</a> for sponsoring me to continue
+working on this book! Please give them lots of work (they do Rust consulting!)
+so they'll have no choice but to hire more Rustaceans &lt;3.</p>
+<h1>Background</h1>
+<h2>What's a microcontroller?</h2>
+<p>A microcontroller is a <em>system</em> on a chip. Whereas your laptop is made up of
+several discrete components: a processor, RAM sticks, a hard drive, an ethernet
+port, etc.; a microcontroller has all those components built into a single
+&quot;chip&quot; or package. This makes it possible to build systems with minimal part
+count.</p>
+<h2>What can you do with a microcontroller?</h2>
+<p>Lots of things! Microcontrollers are the central part of systems known as
+<em>embedded</em> systems. These systems are everywhere but you don't usually notice
+them. These systems control the brakes of your car, wash your clothes, print
+your documents, keep you warm, keep you cool, optimize the fuel consumption of
+your car, etc.</p>
+<p>The main trait of these systems is that they operate without user intervention
+even if they expose a user interface like a washing machine does; most of their
+operation is done on their own.</p>
+<p>The other common trait of these systems is that they <em>control</em> a process. And
+for that these systems usually have one or more sensors and one or more
+actuators. For example, an HVAC system has several sensors, thermometers and
+humidy sensors spread across some area, and several actuators as well, heating
+elements and fans connected to ducts.</p>
+<h2>When should I use a microcontroller?</h2>
+<p>All these application I've mentioned, you can probably implement with a
+Raspberry Pi, a computer that runs Linux. Why should I bother with a
+microcontroller that operates without an OS? Sounds like it would be harder to
+develop a program.</p>
+<p>The main reason is cost. A microcontroller is much cheaper than a general
+purpose computer. Not only the microcontroller is cheaper; it also requires much
+less external electrical components to operate. This makes Printed Circuit
+Boards (PCB) smaller and cheaper to design and manufacture.</p>
+<p>The other big reason is power consumption. A microcontroller consumes orders of
+magnitude less power than a full blown processor. If your application will
+run on batteries that makes a huge difference.</p>
+<p>And last but not least: (hard) &quot;real time&quot; constraints. Some processes require
+their controllers to respond to some events within some time interval (e.g. a
+quadcopter/drone hit by a wind gust). If this &quot;deadline&quot; is not met, the process
+could end in catastrophic failure (e.g. the drone crashes to the ground). A
+general purpose computer  running a general purpose OS has many services running
+in the background. This makes it hard to guarantee execution of a program within
+tight time constraints.</p>
+<h2>When should I <em>not</em> use a microcontroller?</h2>
+<p>Where heavy computations are involved. To keep their power consumption low,
+microcontrollers have very limited computational resources available to them.
+For example, some microcontrollers don't even have hardware support for floating
+point operations. On those devices, performing a simple addition of single
+precision numbers can take hundreds of CPU cycles.</p>
+<h2>Why use Rust and not C?</h2>
+<p>Hopefully, I don't need to convince you here as you are probably familiar with
+the language differences between Rust and C. One point I do want to bring up is
+package management. C lacks an official, widely accepted package management
+solution whereas Rust has Cargo. This makes development <em>much</em> easier. And, IMO,
+easy package management encourages code reuse because libraries can be easily
+integrated into an application which is also a good thing as libraries get more
+&quot;battle testing&quot;.</p>
+<h2>Why should I not use Rust?</h2>
+<p>Or why should I prefer C over Rust?</p>
+<p>The C ecosystem is way more mature. Off the shelf solution for several problems
+already exist. If you need to control a time sensitive process, you can grab one
+of the existing commercial Real Time Operating Systems (RTOS) out there and
+solve your problem. There are no commercial, production-grade RTOSes in Rust yet
+so you would have to either create one yourself or try one of the ones that are
+in development.</p>
+<h1>Knowledge Requirements</h1>
+<p>The main &quot;knowledge requirement&quot; for following along with this tutorial is to
+know some Rust. To get &quot;some&quot; knowledge I recommend walking through the
+<a href="https://doc.rust-lang.org/book/guessing-game.html"><code>Guessing Game</code> tutorial</a>
+and reading through some of the official <a href="https://doc.rust-lang.org/book">The Rust Programming Language Book</a>.
+This should give you a sufficient base of knowledge.</p>
+<h1>Hardware Requirements</h1>
+<p>Here are the materials we will be using:</p>
+<ul>
+<li>A <a href="http://www.st.com/en/evaluation-tools/nucleo-f303re.html">STM32 NUCLEO-F303RE</a> development board. Which is a simple, but powerful
+Arduino-compatible development board.</li>
+</ul>
+<ul>
+<li>You can purchase this board from <a href="http://www.mouser.com/ProductDetail/STMicroelectronics/NUCLEO-F303RE/?qs=%2fha2pyFaduhMljemrTB2TiWNA%252b8NWaDxaSD%252bvQZGxBvfwZmOimB6MjCEAFnAFVgy">Mouser</a> or <a href="https://www.digikey.com/products/en?keywords=NUCLEO-F303RE">Digikey</a>.</li>
+</ul>
+<p align="center">
+<img title="STM32 NUCLEO-F303RE" src="assets/f3.jpg" />
+</p>
+<ul>
+<li>We'll refer to this board as &quot;F3&quot; throughout this book.</li>
+<li>Specs:
+<ul>
+<li>
+<p>A STM32F303RET6 microcontroller. This microcontroller has</p>
+</li>
+<li>
+<p>A single core ARM Cortex-M4F processor with hardware support for single
+precision floating point operations and a maximum clock frequency of 72 MHz.</p>
+</li>
+<li>
+<p>512 KiB of &quot;Flash&quot; memory. (1 KiB = 10<strong>24</strong> bytes)</p>
+</li>
+<li>
+<p>80 KiB of RAM.</p>
+</li>
+<li>
+<p>many &quot;peripherals&quot;: timers, GPIO, I2C, SPI, USART, etc.</p>
+</li>
+<li>
+<p>lots of &quot;pins&quot; that are exposed in the two lateral &quot;headers&quot;.</p>
+</li>
+<li>
+<p>Arduino-compatible headers.</p>
+</li>
+<li>
+<p><strong>IMPORTANT</strong> This microcontroller operates at (around) 3.3V.</p>
+</li>
+<li>
+<p>A second microcontroller: a STM32F103CBT. This microcontroller is actually
+part of an on-board programmer and debugger named ST-LINK and is connected to
+the USB port named &quot;USB ST-LINK&quot;.</p>
+</li>
+</ul>
+</li>
+<li><a href="http://www.st.com/content/ccc/resource/technical/document/datasheet/2c/6f/d7/64/1f/a3/4f/c9/DM00118585.pdf/files/DM00118585.pdf/jcr:content/translations/en.DM00118585.pdf">Datasheet</a></li>
+<li><a href="http://www.st.com/content/ccc/resource/technical/document/reference_manual/4a/19/6e/18/9d/92/43/32/DM00043574.pdf/files/DM00043574.pdf/jcr:content/translations/en.DM00043574.pdf">Reference Manual</a></li>
+<li><a href="http://www.st.com/content/ccc/resource/technical/document/user_manual/98/2e/fa/4b/e0/82/43/b7/DM00105823.pdf/files/DM00105823.pdf/jcr:content/translations/en.DM00105823.pdf">Nucleo User Manual</a></li>
+<li>One mini-B USB cables. One is required to make the STM32 NUCLEO board
+work.</li>
+</ul>
+<p align="center">
+<img title="mini-B USB cable" src="assets/usb-cable.jpg">
+</p>
+<blockquote>
+<p><strong>NOTE</strong> These are <strong>not</strong> the USB cables that ship with pretty much every
+Android phone; those are <em>micro</em> USB cables. Make sure you have the right
+thing!</p>
+</blockquote>
+<ul>
+<li>OPTIONAL. Bring some shields, LEDS, and wires to play around with!</li>
+</ul>
+<blockquote>
+<p><strong>FAQ</strong>: Wait, why do I need this specific hardware?</p>
+</blockquote>
+<p>It makes my life and yours much easier.</p>
+<p>The material is much, much more approachable if we don't have to worry about
+hardware differences. Trust me on this one.</p>
+<blockquote>
+<p><strong>FAQ</strong>: Can I follow this material with a different development board?</p>
+</blockquote>
+<p>Maybe? It depends mainly on two things: your previous experience with
+microcontrollers and/or whether there already exists a high level crate, like
+the <a href="https://github.com/japaric/f3">f3</a>, for your development board somewhere.</p>
+<p>Regardless, with a different development board, this text would lost most if not
+all its beginner friendliness and &quot;easy to follow&quot;-ness, IMO.</p>
+<p>If you have a different development board and you don't consider yourself a
+total beginner, you are better off reading the <a href="https://japaric.github.io/copper">Copper</a> book which approaches
+the Rust on microcontrollers topic in a bottom-up and device agnostic way. Or,
+maybe even just read the source of the <a href="https://github.com/japaric/f3">f3</a> crate.</p>
+<h1>Setting up your development environment</h1>
+<p>This section describes the common steps needed to set up rust and supporting tools. Before following this section you should follow the OS specific sections:</p>
+<ul>
+<li><a href="03-setup/linux.html">Linux</a></li>
+<li><a href="03-setup/macos.html">macOS</a></li>
+<li><a href="03-setup/windows.html">Windows</a></li>
+</ul>
+<h2>Requirements</h2>
+<p>We will use the following programs and tools. Where a minimum version is not
+specified, any recent version should work but we have listed the version we have
+tested.</p>
+<ol>
+<li>cargo &amp; <code>rustc</code> (&gt;= rust nightly 1.14).</li>
+<li><a href="https://crates.io/crates/xargo">Xargo</a> &gt;= 0.2.x.</li>
+<li><a href="https://crates.io/crates/itm"><code>itmdump</code></a> &gt;= 0.1.1</li>
+<li>OpenOCD &gt;=0.8. Tested version: 0.9.0</li>
+<li>An <code>arm-none-eabi-gcc</code> toolchain. Including:</li>
+</ol>
+<ul>
+<li><code>arm-none-eabi-gcc</code>. Tested versions: 4.8, 5.2 and 6.2</li>
+<li><code>arm-none-eabi-gdb</code>. Version 7.12 or newer highly recommended. Tested versions: 7.10, 7.11 and 7.12</li>
+</ul>
+<p>Next, follow OS-agnostic installation instructions for a few of the tools:</p>
+<h3><code>rustc</code> &amp; Cargo</h3>
+<p>The preferred way to install rust and cargo is to follow the instructions
+at https://www.rust-lang.org/ for your particular platform. You should use
+the instructions which install <code>rustup</code>. Afterwards we will need to download
+and install the <code>nightly</code> build which is required for embedded development
+for the time being. To do that:</p>
+<pre><code>$ rustup default nightly
+$ rustup component add rust-src # for Xargo later.
+</code></pre>
+<h3>Xargo</h3>
+<p>You can install Xargo in two different ways:</p>
+<ul>
+<li>By grabbing a <a href="https://github.com/japaric/xargo/releases">binary release</a> and placing it somewhere in your <code>$PATH</code>.
+<code>$HOME/.cargo/bin</code> is a good place to install it to. Do make sure that the
+binary release you &quot;installed&quot; actually works by executing the following
+command:</li>
+</ul>
+<pre><code>$ xargo -V
+xargo 0.2.0 (bd8ebc4 2016-10-16)
+cargo 0.13.0-nightly (a8baa5b 2016-10-15)
+</code></pre>
+<ul>
+<li>Or, by building it yourself with the following command:</li>
+</ul>
+<pre><code>$ cargo install xargo
+$ xargo -V
+</code></pre>
+<h3><code>itmdump</code></h3>
+<pre><code>$ cargo install itm
+</code></pre>
+<h3>OS specific instructions</h3>
+<p>If you have not followed the platorm specific instructions please follow them
+now:</p>
+<ul>
+<li><a href="03-setup/linux.html">Linux</a></li>
+<li><a href="03-setup/windows.html">Windows</a></li>
+<li><a href="03-setup/macos.html">macOS</a></li>
+</ul>
+<h1>Linux</h1>
+<p>Here are the installation commands for a few Linux distributions.</p>
+<h2>REQUIRED packages</h2>
+<ul>
+<li>Ubuntu 16.04 or newer / Debian Jessie or newer:</li>
+</ul>
+<pre><code>$ sudo apt-get install \
+  gcc-arm-none-eabi \
+  gdb-arm-none-eabi \
+  git \
+  openocd
+</code></pre>
+<ul>
+<li>Fedora 23 or newer:</li>
+</ul>
+<pre><code>$ sudo dnf install \
+  arm-none-eabi-gcc-cs \
+  arm-none-eabi-gdb \
+  git \
+  openocd
+</code></pre>
+<ul>
+<li>Arch Linux</li>
+</ul>
+<pre><code>$ sudo pacman -S \
+  arm-none-eabi-gcc \
+  arm-none-eabi-gdb \
+  git \
+  openocd
+</code></pre>
+<h2>udev rules</h2>
+<h3>Ubuntu/Debian</h3>
+<p>These rules let you use USB devices like the STM32F3's built in JTAG debugger
+without root privilege, i.e. <code>sudo</code>. To do this create the following file in
+<code>/etc/udev/rules.d</code>:</p>
+<pre><code>$ cat &gt;/etc/udev/rules.d/99-openocd.rules &lt;&lt; EOL
+# STM32F3DISCOVERY rev A/B - ST-LINK/V2
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;3748&quot;, GROUP=&quot;uucp&quot;
+
+# STM32F3DISCOVERY rev C+ - ST-LINK/V2-1
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;374b&quot;, GROUP=&quot;uucp&quot;
+EOL
+</code></pre>
+<p>Now check the results:</p>
+<pre><code>$ cat /etc/udev/rules.d/99-openocd.rules
+# STM32F3DISCOVERY rev A/B - ST-LINK/V2
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;3748&quot;, GROUP=&quot;uucp&quot;
+
+# STM32F3DISCOVERY rev C+ - ST-LINK/V2-1
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;374b&quot;, GROUP=&quot;uucp&quot;
+</code></pre>
+<p>Then reload the udev rules with:</p>
+<pre><code>$ sudo udevadm control --reload-rules
+</code></pre>
+<p>If you had the STM32F3NUCLEO plugged to your laptop, unplug it and then plug
+plug it back in.</p>
+<p>Finally, check if you are in the <code>uucp</code> group.</p>
+<pre><code>$ groups $(id -nu)
+(..) uucp (..)
+     ^^^^
+</code></pre>
+<p>(<code>$(id -nu)</code> returns your user name. In my case it's <code>cwoodall</code>.)</p>
+<p>If <code>uucp</code> appears in the output. You are all set! Go to the
+<a href="03-setup/verify.html">next section</a>. Otherwise, keep reading:</p>
+<ul>
+<li>Add yourself to the <code>uucp</code> group.</li>
+</ul>
+<pre><code>$ sudo usermod -a -G uucp $(id -u -n)
+</code></pre>
+<p>If you get:</p>
+<pre><code>usermod: group 'uucp' does not exist
+</code></pre>
+<p>Try following the instructions for Fedora instead.</p>
+<ul>
+<li>Check again the output of <code>groups</code>. <code>uucp</code> should be there this
+time!</li>
+</ul>
+<pre><code>$ groups $(id -nu)
+(..) uucp (..)
+     ^^^^
+</code></pre>
+<h3>Fedora</h3>
+<p>These rules let you use USB devices like the STM32F3's built in JTAG debugger
+without root privilege, i.e. <code>sudo</code>. To do this create the following file in
+<code>/etc/udev/rules.d</code>:</p>
+<pre><code>$ cat &gt;/etc/udev/rules.d/99-openocd.rules &lt;&lt; EOL
+# STM32F3DISCOVERY rev A/B - ST-LINK/V2
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;3748&quot;, GROUP=&quot;dialout&quot;
+
+# STM32F3DISCOVERY rev C+ - ST-LINK/V2-1
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;374b&quot;, GROUP=&quot;dialout&quot;
+EOL
+</code></pre>
+<p>Now check the results:</p>
+<pre><code>$ cat /etc/udev/rules.d/99-openocd.rules
+# STM32F3DISCOVERY rev A/B - ST-LINK/V2
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;3748&quot;, GROUP=&quot;dialout&quot;
+
+# STM32F3DISCOVERY rev C+ - ST-LINK/V2-1
+ATTRS{idVendor}==&quot;0483&quot;, ATTRS{idProduct}==&quot;374b&quot;, GROUP=&quot;dialout&quot;
+</code></pre>
+<p>Then reload the udev rules with:</p>
+<pre><code>$ sudo udevadm control --reload-rules
+</code></pre>
+<p>If you had the STM32F3NUCLEO plugged to your laptop, unplug it and then plug
+plug it back in.</p>
+<p>Finally, check if you are in the <code>dialout</code> group.</p>
+<pre><code>$ groups $(id -nu)
+(..) dialout (..)
+     ^^^^^^^
+</code></pre>
+<p>(<code>$(id -nu)</code> returns your user name. In my case it's <code>cwoodall</code>.)</p>
+<p>If <code>uucp</code> appears in the output. You are all set! Go to the
+<a href="03-setup/verify.html">next section</a>. Otherwise, keep reading:</p>
+<ul>
+<li>Add yourself to the <code>dialout</code> group.</li>
+</ul>
+<pre><code>$ sudo usermod -a -G dialout $(id -u -n)
+</code></pre>
+<p>If you get:</p>
+<pre><code>usermod: group 'dialout' does not exist
+</code></pre>
+<p>Try following the instructions for Fedora instead.</p>
+<ul>
+<li>Check again the output of <code>groups</code>. <code>dialout</code> should be there this
+time!</li>
+</ul>
+<pre><code>$ groups $(id -nu)
+(..) dialout (..)
+     ^^^^^^^
+</code></pre>
+<h3>Both</h3>
+<p>You'll have to re-log for these changes to take effect. You have two options:</p>
+<p>You can reboot or log out from your current session and then log in; this will
+close all the programs you have open right now.</p>
+<p>The other option is to use the command below:</p>
+<pre><code>$ su - $(id -nu)
+</code></pre>
+<p>to re-log <em>only in the current shell</em> and get access to <code>uucp</code> or <code>dialout</code>
+devices <em>only on that shell</em>. Other shells <em>won't</em> have access to <code>uucp</code> or
+<code>dialout</code> devices unless you manually re-log on them with the same <code>su</code> command.</p>
+<p>Now, go to the <a href="03-setup/verify.html">next section</a>.</p>
+<h1>Windows</h1>
+<h2><code>arm-none-eabi-*</code></h2>
+<p>The GNU ARM Embedded Toolchain project provides <code>.exe</code> installers for Windows.
+Grab <a href="https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q3-update/+download/gcc-arm-none-eabi-5_4-2016q3-20160926-win32.exe">this one</a>, and follow the instructions. Just before the installation
+process finishes tick/select the &quot;Add path to environment variable&quot; option. Then
+verify that the tools are in your <code>%PATH%</code>:</p>
+<pre><code>$ arm-none-eabi-gcc -v
+(..)
+gcc version 5.4.1 20160919 (release) (..)
+</code></pre>
+<h2>OpenOCD</h2>
+<p>There's no official binary release of OpenOCD for Windows but there are
+unofficial releases available <a href="http://gnutoolchains.com/arm-eabi/openocd/">here</a>. Grab the 0.9.0 zipfile and extract it
+somewhere in your drive (I recommend <code>C:\OpenOCD</code> but with the drive letter that
+makes sense to you) then update your <code>%PATH%</code> environment variable to include
+the following path: <code>C:\OpenOCD\bin</code> (or the path that you used before).</p>
+<p>Verify that OpenOCD is in yout <code>%PATH%</code> with:</p>
+<pre><code>$ openocd -v
+Open On-Chip Debugger 0.9.0 2015-08-15-12:41 (..)
+</code></pre>
+<h2>PuTTY</h2>
+<p>Download the latest <code>putty.exe</code> from <a href="http://www.chiark.greenend.org.uk/%7Esgtatham/putty/download.html">this site</a> and place it somewhere in your
+<code>%PATH%</code>.</p>
+<h2>ST-LINK USB driver</h2>
+<p>You'll also need to install <a href="http://www.st.com/en/embedded-software/stsw-link009.html">this USB driver</a> or OpenOCD won't work. Follow the
+installer instructions and make sure you install the right (32-bit or 64-bit)
+version of the driver.</p>
+<p>That's all! Go to the <a href="03-setup/verify.html">next section</a>.</p>
+<h1>macOS</h1>
+<p>All the tools can be install using <a href="http://brew.sh/">Homebrew</a>:</p>
+<pre><code>$ brew install git
+$ brew cask install gcc-arm-embedded
+$ brew install openocd
+</code></pre>
+<p>If the <code>brew cask</code> command doesn't work (<code>Error: Unknown command: cask</code>), then
+run <code>brew tap Caskroom/tap</code> first and try again.</p>
+<p>That's all! Go to the <a href="03-setup/verify.html">next section</a>.</p>
+<h1>Verify the installation</h1>
+<p>Let's verify that all the tools were installed correctly.</p>
+<h2>Platform Specific</h2>
+<h3>Linux</h3>
+<h4>Verify permissions</h4>
+<p>Connect the F3 to your laptop using an USB cable. Be sure to connect the cable
+to the &quot;USB ST-LINK&quot; port, the USB port at the middle.</p>
+<p>The F3 should now appear as a USB device (file) in <code>/dev/bus/usb</code>. Let's find
+out how it got enumerated:</p>
+<pre><code>$ lsusb | grep -i stm
+Bus 003 Device 004: ID 0483:374b STMicroelectronics ST-LINK/V2.1
+    ^^^        ^^^
+</code></pre>
+<p>In my case, the F3 got connected to the bus #3 and got enumerated as the device
+#4. This means the file <code>/dev/bus/usb/003/004</code> <em>is</em> the F3. Let's check its
+permissions:</p>
+<pre><code>$ ls -l /dev/bus/usb/003/004
+crw-rw-r-- 1 root uucp 189, 262 Oct 27 00:00 /dev/bus/usb/003/004
+</code></pre>
+<p>The group should be <code>uucp</code> (or <code>dialout</code>). If it's not ... then check your <a href="03-setup/linux.html#udev%20rules">udev rules</a> and try
+re-loading them with:</p>
+<pre><code>$ sudo udevadm control --reload-rules
+</code></pre>
+<h2>All</h2>
+<h3>First OpenOCD connection</h3>
+<p>First, connect the F3 to your laptop using an USB cable. Connect the cable to
+USB port at the center of the F3, the one that's labeled &quot;USB ST-LINK&quot;.</p>
+<p>Two <em>red</em> LEDs should turn on right after connecting the USB cable to the board.</p>
+<p>Next, call this command:</p>
+<pre><code># *nix
+$ openocd -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg
+
+# Windows
+$ openocd -s C:\OpenOCD\share\scripts -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong> Windows users: <code>C:\OpenOCD</code> is the directory where you installed
+OpenOCD to.</p>
+</blockquote>
+<blockquote>
+<p><strong>IMPORTANT</strong> There is more than one hardware revision of the
+STM32F3DISCOVERY board. For older revisions, you'll need to change the
+&quot;interface&quot; argument to <code>-f interface/stlink-v2.cfg</code> (note: no <code>-1</code> at the
+end). Alternatively, older revisions can use <code>-f board/stm32f3discovery.cfg</code>
+instead of <code>-f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg</code>.</p>
+</blockquote>
+<p>You should see output like this:</p>
+<pre><code>Open On-Chip Debugger 0.9.0 (2016-04-27-23:18)
+Licensed under GNU GPL v2
+For bug reports, read
+        http://openocd.org/doc/doxygen/bugs.html
+Info : auto-selecting first available session transport &quot;hla_swd&quot;. To override use 'transport select &lt;transport&gt;'.
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+none separate
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : clock speed 950 kHz
+Info : STLINK v2 JTAG v27 API v2 SWIM v15 VID 0x0483 PID 0x374B
+Info : using stlink api v2
+Info : Target voltage: 2.914184
+Info : stm32f3x.cpu: hardware has 6 breakpoints, 4 watchpoints
+</code></pre>
+<p>(If you don't ... then check the <a href="appendix/1-general-troubleshooting/README.html">general troubleshooting</a> instructions.)</p>
+<p>And <code>openocd</code> will block. That's fine.</p>
+<p>Also, one of the red LEDs, the one closest to the USB port, should start
+oscillating between red light and green light.</p>
+<p>That's it! It works. You can now close/kill <code>openocd</code>.</p>
+<h1>Blinking An LED</h1>
+<blockquote>
+<p>The &quot;Hello, World&quot; of Embedded Systems Programming.</p>
+</blockquote>
+<p>Alright, let's start by building the following application:</p>
+<p align="center">
+<img src="http://i.imgur.com/41n82mp.gif">
+</p>
+<p>We are going to start off with a high-level API to implement this very simple
+program, but we will get into some of the details in the next section. The
+main goal is to get familiar with building a Rust program, loading it and
+debugging it.</p>
+<p>Throughout this text we'll be using the starter code that's in the <a href="https://embedded-boston.github.io/tutorial-bring-and-blink-rust/">tutorial-bring-and-blink-rust</a>
+repository. Make sure you always have the latest version of the master branch
+because this website tracks that branch. You can get using git with the
+following command:</p>
+<pre><code>$ git clone https://github.com/embedded-boston/tutorial-bring-and-blink-rust.git
+</code></pre>
+<p>The starter code is in the <code>src</code> directory of that repository. Inside that
+directory there more directories named after each chapter of this book. Most of
+those directories are starter Cargo projects.</p>
+<p>Now, jump into the <code>src/04-blink</code> directory. Check the <code>src/main.rs</code>
+file:</p>
+<pre><code class="language-rust">#![deny(unsafe_code)]
+#![no_main]
+#![no_std]
+
+#[macro_use]
+extern crate pg;
+
+use pg::delay;
+use pg::gpio;
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    let led: gpio::Gpio = gpio::Gpio::new(5, gpio::GpioBank::A, gpio::GpioDirection::Out);
+    let mut state: bool = false;
+
+    loop {
+        delay::ms(1_000);
+        led.write(state);
+        state = !state;
+    }
+}
+</code></pre>
+<p>There's some unusual stuff in it: <code>#![no_main]</code>, <code>#[no_mangle]</code> and <code>main</code> is
+both <code>pub</code> and has signature <code>fn() -&gt; !</code>. For now, why those are the way they
+are doesn't matter. The only practical implication of all this is that you can't
+return from the <code>main</code> function.</p>
+<p>If you are a careful observer, you'll also notice there is a <code>.cargo</code> directory
+in the Cargo project as well. This specifies some build time arguments, including
+the linker file we will be using.</p>
+<p>Alright, let's start by building this program.</p>
+<h1>Build it</h1>
+<p>The first step is to build our &quot;binary&quot; crate. Because the microcontroller has
+different architecture than your laptop we'll have to cross compile. Cross
+compiling in Rust land is as simple as passing an extra <code>--target</code> flag to
+<code>rustc</code>or Cargo. The complicated part is figuring out the argument of that flag:
+the <em>name</em> of the target.</p>
+<p>The microcontroller in the F3 has a Cortex-M4F processor in it. <code>rustc</code> knows
+how to cross compile to the Cortex-M architecture and provides 4 different
+targets that cover the different processor families within that architecture:</p>
+<ul>
+<li><code>thumbv6m-none-eabi</code>, for the Cortex-M0 and Cortex-M1 processors</li>
+<li><code>thumbv7m-none-eabi</code>, for the Cortex-M3 processor</li>
+<li><code>thumbv7em-none-eabi</code>, for the Cortex-M4 and Cortex-M7 processors</li>
+<li><code>thumbv7em-none-eabihf</code>, for the Cortex-M4<strong>F</strong> and Cortex-M7<strong>F</strong> processors</li>
+</ul>
+<p>For the F3, we'll to use the <code>thumbv7em-none-eabihf</code> target.</p>
+<p>Now, <code>rustup</code> doesn't provide a binary release of the <code>core</code> crate for this
+target, so we'll use Xargo instead of Cargo. Xargo will take care of compiling
+the <code>core</code> crate for us:</p>
+<pre><code>$ xargo build --target thumbv7em-none-eabihf
+   Compiling rlibc v1.0.0
+   Compiling volatile-register v0.1.2
+   Compiling ref_slice v1.1.1
+   Compiling f3 v0.3.0
+   Compiling cortex-m v0.1.6
+   Compiling stm32f30x-memory-map v0.1.2
+   Compiling compiler-builtins-snapshot v0.0.20161008+c56faf22abb39724008148d58f12bcd43b6d236b
+   Compiling pg v0.1.0 (file:///home/cwoodall/workspace/personal/discovery/src/04-blink/pg)
+   Compiling blink v0.1.0 (file:///home/cwoodall/workspace/personal/discovery/src/04-blink)
+    Finished dev [unoptimized + debuginfo] target(s) in 4.45 secs
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong> Be sure to compile this crate <em>without</em> optimizations</p>
+</blockquote>
+<p>Also, let me note that Xargo exposes the exact same UI as Cargo so you can use
+any subcommand (even custom ones) that you would normally use with Cargo.</p>
+<p>OK, now we have produced an executable. As a sanity check, let's verify that
+the produced executable is actually an ARM binary:</p>
+<pre><code># *nix only
+$ file target/thumbv7em-none-eabihf/debug/blink
+blink: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped
+                                  ~~~  ~~~~~                   ~~~~~~~~~~~~~~~~~
+</code></pre>
+<p>Another way to do that is to use <code>readelf</code> because the executable produced by
+<code>rustc</code> is actually an ELF (Executable and Linkable Format) file.</p>
+<pre><code>$ arm-none-eabi-readelf -h target/thumbv7em-none-eabihf/debug/blink
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           ARM &lt;--
+  Version:                           0x1
+  Entry point address:               0x8000195 &lt;--
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          555816 (bytes into file)
+  Flags:                             0x5000400, Version5 EABI, hard-float ABI &lt;--
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         2
+  Size of section headers:           40 (bytes)
+  Number of section headers:         17
+  Section header string table index: 14
+</code></pre>
+<p>Next, we'll &quot;flash&quot; the program into our microcontroller.</p>
+<h1>Flash it</h1>
+<p>Flashing is the process of moving our program into the microcontroller's
+(persistent) memory. Once flashed, the microcontroller will executed the flashed
+program everytime is powered on.</p>
+<p>In this case, our <code>blink</code> program will be the <em>only</em> program in the
+microcontroller memory. By this I mean that there's nothing else running on the
+microcontroller: no OS, no &quot;daemon&quot;, nothing. <code>blink</code> has full control
+over the device.</p>
+<p>Onto the actual flashing. First thing we need is to do is launch OpenOCD.
+We did that in the previous section but this time we'll run the command inside a
+temporary directory (<code>/tmp</code> on *nix; <code>%TEMP%</code> on Windows).</p>
+<p>Make sure the F3 is connected to your laptop and run the following commands on a
+new terminal.</p>
+<pre><code># *nix
+$ cd /tmp
+
+# Windows
+$ cd %TEMP%
+
+# Windows: remember that you need an extra `-s %PATH_TO_OPENOCD%\share\scripts`
+$ openocd \
+  -f interface/stlink-v2-1.cfg \
+  -f target/stm32f3x.cfg
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong> Older revisions need to pass slightly different arguments to
+<code>openocd</code>. Review <a href="03-setup/verify.html#First%20OpenOCD%20connection">this section</a> for the details.</p>
+</blockquote>
+<p>The program will block; leave that terminal open.</p>
+<p>Now it's a good time to explain what this command is actually doing.</p>
+<p>I mentioned that the F3 actually has two microcontrollers. One of them is used
+as a programmer/debugger. The part of the board that's used as a programmer is
+called ST-LINK (that's how STMicroelectronics decided to call it). This
+&quot;ST-LINK&quot; is connected to the target microcontroller using a Serial Wire Debug
+(SWD) interface (this interface is an ARM standard so you'll run into it when
+dealing with other Cortex-M based microcontrollers). This SWD interface can be
+used to flash and debug a microcontroller. The ST-LINK is connected to the
+&quot;USB ST-LINK&quot; port and will appear as an USB device when you connect the F3 to
+your laptop.</p>
+<p align="center">
+<img height=640 title="On-board ST-LINK" src="assets/st-link.png">
+</p>
+<p>As for OpenOCD. It's a software that provides some services like a <em>GDB server</em>
+&quot;on top&quot; of USB devices that expose a debugging protocol like SWD or JTAG.</p>
+<p>Onto the actual command: Those <code>.cfg</code> files we are using instruct OpenOCD to
+look for a ST-LINK USB device (<code>interface/stlink-v2-1.cfg</code>) and to expect a
+STM32F3XX microcontroller (<code>target/stm32f3x.cfg</code>) to be connected to the
+ST-LINK.</p>
+<p>The OpenOCD output looks like this:</p>
+<pre><code>Open On-Chip Debugger 0.9.0 (2016-04-27-23:18)
+Licensed under GNU GPL v2
+For bug reports, read
+        http://openocd.org/doc/doxygen/bugs.html
+Info : auto-selecting first available session transport &quot;hla_swd&quot;. To override use 'transport select &lt;transport&gt;'.
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+none separate
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : clock speed 950 kHz
+Info : STLINK v2 JTAG v27 API v2 SWIM v15 VID 0x0483 PID 0x374B
+Info : using stlink api v2
+Info : Target voltage: 2.919073
+Info : stm32f3x.cpu: hardware has 6 breakpoints, 4 watchpoints
+</code></pre>
+<p>The &quot;6 breakpoints, 4 watchpoints&quot; part indicates the debugging features the
+processor has available.</p>
+<p>I mentioned that OpenOCD provides a GDB server so let's connect to that right
+now:</p>
+<pre><code>$ arm-none-eabi-gdb -q target/thumbv7em-none-eabihf/debug/blink
+Reading symbols from target/thumbv7em-none-eabihf/debug/blink...done.
+(gdb)
+</code></pre>
+<p>This only opens a GDB shell. To actually connect to the OpenOCD GDB server, use
+the following command within the GDB shell:</p>
+<pre><code>(gdb) target remote :3333
+Remote debugging using :3333
+0x00000000 in ?? ()
+</code></pre>
+<p>OpenOCD's GDB server is listening on TCP port 3333 (localhost). This command is
+connecting to that port.</p>
+<p>After entering this command, you'll see new output in the OpenOCD terminal:</p>
+<pre><code class="language-diff"> Info : stm32f3x.cpu: hardware has 6 breakpoints, 4 watchpoints
++Info : accepting 'gdb' connection on tcp/3333
++Info : device id = 0x10036422
++Info : flash size = 256kbytes
+</code></pre>
+<p>Almost there. To flash the device, we'll use the <code>load</code> command inside the GDB
+shell:</p>
+<pre><code>(gdb) load
+Loading section .text, size 0x6798 lma 0x8000000
+Loading section .ARM.extab.text._ZN44_$LT$char$u20$as$u20$core..char..CharExt$GT$11encode_utf817h4f3134c02513b5e1E, size 0xc lma 0x8006798
+Loading section .ARM.extab.text._ZN4core3fmt9Formatter11debug_tuple17hf0ed23ebdee33c00E, size 0xc lma 0x80067a4
+Start address 0x8000194, load size 26544
+Transfer rate: 21 KB/sec, 6636 bytes/write.
+</code></pre>
+<p>And that's it. You'll also new output under the OpenOCD command.</p>
+<pre><code class="language-diff"> Info : flash size = 256kbytes
++Info : Unable to match requested speed 1000 kHz, using 950 kHz
++Info : Unable to match requested speed 1000 kHz, using 950 kHz
++adapter speed: 950 kHz
++target state: halted
++target halted due to debug-request, current mode: Thread
++xPSR: 0x01000000 pc: 0x08000194 msp: 0x2000a000
++Info : Unable to match requested speed 8000 kHz, using 4000 kHz
++Info : Unable to match requested speed 8000 kHz, using 4000 kHz
++adapter speed: 4000 kHz
++target state: halted
++target halted due to breakpoint, current mode: Thread
++xPSR: 0x61000000 pc: 0x2000003a msp: 0x2000a000
++Info : Unable to match requested speed 1000 kHz, using 950 kHz
++Info : Unable to match requested speed 1000 kHz, using 950 kHz
++adapter speed: 950 kHz
++target state: halted
++target halted due to debug-request, current mode: Thread
++xPSR: 0x01000000 pc: 0x08000194 msp: 0x2000a000
+</code></pre>
+<p>Our program is loaded, let's debug it!</p>
+<h1>Debug it</h1>
+<p>We are already inside a debugging session so let's debug our program.</p>
+<p>After the <code>load</code> command, our program is stopped at its <em>entry point</em>. This is
+indicated by the &quot;Start address 0x8000XXX&quot; part of GDB's output. The entry point
+is the part of a program that a processor / CPU will execute first.</p>
+<p>The starter project I've provided to you has some extra code that runs <em>before</em>
+the <code>main</code> function. At this time, we are not interested in that &quot;pre-main&quot;
+part so let's skip right to the beginning of the <code>main</code> function. We'll do that
+using a breakpoint:</p>
+<pre><code>(gdb) break main
+Breakpoint 1 at 0x80001e6: file $PWD/src/main.rs, line 9.
+
+(gdb) continue
+Continuing.
+Note: automatically using hardware breakpoints for read-only addresses.
+
+Breakpoint 1, blink::main ()
+    at /home/cwoodall/workspace/personal/discovery/src/04-blink/src/main.rs:19
+19      let mut state: bool = false;
+</code></pre>
+<p>Breakpoints can be used to stop the normal flow of a program. The <code>continue</code>
+command will let the program run free <em>until</em> it reaches a breakpoint. In this
+case, until it reaches the <code>main</code> function because there's a breakpoint there.</p>
+<p>Note that GDB output says &quot;Breakpoint 1&quot;. Remember that our processor can only
+use 6 breakpoints so it's a good idea to pay attention to these messages.</p>
+<p>For a nicer debugging experience, we'll be using GDB's Text User Interface
+(TUI). To enter into that mode, on the GDB shell enter the following command:</p>
+<pre><code>(gdb) layout src
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong> Apologies Windows users. The GDB shipped with the GNU ARM Embedded
+Toolchain doesn't support this TUI mode.</p>
+</blockquote>
+<p><img src="assets/gdb-layout-src.png" alt="GDB session" title="GDB TUI" /></p>
+<p>At any point you can leave the TUI mode using the following command:</p>
+<pre><code>(gdb) tui disable
+</code></pre>
+<p>OK. We are now at the beginning of <code>main</code>. We can advance the program statement
+by statement using the <code>step</code>  and <code>next</code> (steps over functions) commands. So
+let's use <code>next</code> three times that twice to reach the <code>loop {</code> statement.</p>
+<pre><code>(gdb) n
+15      let led: gpio::Gpio = gpio::Gpio::new(5, gpio::GpioBank::A, gpio::GpioDirection::Out);
+(gdb) n
+19      let mut state: bool = false;
+(gdb) n
+21      loop {
+</code></pre>
+<p>If you are not using the TUI mode, on each <code>next</code> or <code>step</code> call GDB will print
+back the current statement along with its line number.</p>
+<p>We are now &quot;on&quot; the <code>loop</code> statement; that statement hasn't been executed yet.
+This means that <code>led</code> and <code>state</code> are initialized. Let's inspect those
+stack/local variables using the <code>print</code> command:</p>
+<pre><code>(gdb) print led
+$1 = {
+  pin = 5 '\005',
+  bank = A
+}
+(gdb) print state
+$2 = false
+(gdb) print &amp;led
+$3 = (struct Gpio *) 0x20009fdc
+(gdb) print &amp; state
+$4 = (bool *) 0x20009fe3
+</code></pre>
+<p>Interestingly it prints the struct correctly!</p>
+<p>The command <code>print &amp;led</code> prints the address of the variable <code>led</code>. The interesting
+bit here is that GDB output shows the type of the reference: <code>struct Gpio*</code>, a
+pointer to an <code>i32</code> value. Another interesting thing is that the addresses of <code>led</code>
+and <code>state</code> are very close to each other.</p>
+<p>Instead of printing the local variables one by one, you can also use the <code>info locals</code> command:</p>
+<pre><code>(gdb) info locals
+state = false
+led = {
+  pin = 5 '\005',
+  bank = A
+}
+</code></pre>
+<p>OK. With another <code>step</code>, we'll be on top of the <code>loop {}</code> statement:</p>
+<pre><code>(gdb) s
+23          delay::ms(1_000);
+</code></pre>
+<p>And we are ready to start blinking (in just a second). We will use the
+<code>continue</code> command to start running the program.</p>
+<pre><code>(gdb) continue
+Continuing.
+</code></pre>
+<p>You should now see the led blinking on and off in 1 second intervals. Yay!</p>
+<p>We can also switch to the disassemble view with the <code>layout asm</code> command and
+advance one instruction at a time using <code>stepi</code>.</p>
+<blockquote>
+<p><strong>NOTE</strong> If you used the <code>step</code> command by mistake and GDB got stuck, you can
+unstuck it by hitting <code>Ctrl+C</code>.</p>
+</blockquote>
+<pre><code>(gdb) layout asm
+</code></pre>
+<p><img src="assets/gdb-layout-asm.png" alt="GDB session" title="GDB disassemble" /></p>
+<p>If you are not using the TUI mode, you can use the <code>disassemble /m</code> command to
+disassemble the program around the line you are currently at.</p>
+<pre><code>(gdb) disassemble /m
+Dump of assembler code for function led_roulette::main:
+9       pub fn main() -&gt; ! {
+   0x080001e6 &lt;+0&gt;:     sub     sp, #12
+   0x080001e8 &lt;+2&gt;:     b.n     0x80001ea &lt;led_roulette::main+4&gt;
+
+10          let y;
+11          let x = 42;
+   0x080001ea &lt;+4&gt;:     movs    r0, #42 ; 0x2a
+   0x080001ec &lt;+6&gt;:     str     r0, [sp, #4]
+
+12          y = x;
+   0x080001ee &lt;+8&gt;:     str     r0, [sp, #8]
+
+13
+14          loop {}
+=&gt; 0x080001f0 &lt;+10&gt;:    b.n     0x80001f2 &lt;led_roulette::main+12&gt;
+   0x080001f2 &lt;+12&gt;:    b.n     0x80001f2 &lt;led_roulette::main+12&gt;
+
+End of assembler dump.
+</code></pre>
+<p>See the arrow <code>=&gt;</code>? It shows the instruction the processor will execute next.</p>
+<p>If not inside the TUI mode, on each <code>stepi</code> command GDB will print the
+statement, the line number <em>and</em> the address of the instruction the processor
+will execute next.</p>
+<pre><code>(gdb) stepi
+0x080001f2      13          loop {}
+
+(gdb) stepi
+0x080001f2      13          loop {}
+</code></pre>
+<p>One last trick before we move to something more interesting. Enter the following
+commands into GDB:</p>
+<pre><code>(gdb) monitor reset halt
+Unable to match requested speed 1000 kHz, using 950 kHz
+Unable to match requested speed 1000 kHz, using 950 kHz
+adapter speed: 950 kHz
+target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0x01000000 pc: 0x08000040 msp: 0x2000a000
+(gdb) c
+Continuing.
+
+Breakpoint 1, blink::main ()
+    at /home/cwoodall/workspace/personal/discovery/src/04-blink/src/main.rs:19
+19      let mut state: bool = false;
+(gdb)
+</code></pre>
+<p>We are now back at the beginning of <code>main</code>!</p>
+<p><code>monitor reset halt</code> will reset the microcontroller and stop it right at the
+program entry point. The following <code>continue</code> command will let the program run
+freely until it reaches the <code>main</code> function that has a breakpoint on it.</p>
+<p>This combo is handy when you, by mistake, skipped over a part of the program
+that you were interested in inspecting. You can easily roll back the state of
+your program back to its very beginning.</p>
+<blockquote>
+<p><strong>The fine print</strong>: This <code>reset</code> command doesn't clear or touch RAM. That
+memory will retain its values from the previous run. That shouldn't be a
+problem tough, unless your program behavior depends of the value of
+<em>uninitialized</em> variables but that's the definition of Undefined Behavior
+(UB).</p>
+</blockquote>
+<p>We are done with this debug session. You can end it with the <code>quit</code> command.</p>
+<pre><code>(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [Remote target] will be detached.
+
+Quit anyway? (y or n) y
+Detaching from program: $PWD/target/thumbv7em-none-eabihf/debug/blink, Remote target
+Ending remote debugging.
+</code></pre>
+<p>Don't close OpenOCD though! We'll use it again and again later on. It's better
+just to leave it running.</p>
+<p>Now lets play around and get people up to speed! Next (if we have time) we will
+delve a little deeper and maybe even experiment with some inputs!</p>
+<h1>Registers</h1>
+<p>It's time to explore what the <code>Gpio</code> API does under the hood.</p>
+<p>In a nutshell, it just writes to some special memory regions. Go into the
+<code>05-digging-deeper</code> directory and let's run the starter code.</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+
+extern crate pg;
+extern crate f3;
+
+use f3::peripheral;
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    let gpioa = unsafe { peripheral::gpioa_mut() };
+    let rcc = unsafe { peripheral::rcc_mut() };
+
+    rcc.ahbenr.modify(|_, w| w.iopaen(true));
+    gpioa.moder.write(|w| w.moder5(0b01));
+
+    loop {
+        f3::delay::ms(1_000);
+        gpioa.bsrr.write(|w| w.bs5(true));
+        f3::delay::ms(1_000);
+        gpioa.bsrr.write(|w| w.br5(true));
+    }
+}
+</code></pre>
+<p>Wow I just a lower level abstraction, but this is essentially what the
+<code>Gpio</code> module does. To dig down deeper into the direct register accesses
+we need to ge a little farther into <code>unsafe</code> land.</p>
+<pre><code>#![no_std]
+#![no_main]
+
+extern crate pg;
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    unsafe {
+        // A magic address!
+        const GPIOE_BSRR: u32 = 0x4800_1018;
+
+        // Turn on the North LED (red)
+        *(GPIOE_BSRR as *mut u32) = 1 &lt;&lt; 9;
+
+        // Turn on the East LED (green)
+        *(GPIOE_BSRR as *mut u32) = 1 &lt;&lt; 11;
+
+        // Turn off the North LED
+        *(GPIOE_BSRR as *mut u32) = 1 &lt;&lt; (9 + 16);
+
+        // Turn on the East LED
+        *(GPIOE_BSRR as *mut u32) = 1 &lt;&lt; (11 + 16);
+    }
+
+    loop {}
+}
+</code></pre>
+<p>What's this magic?</p>
+<p>The address <code>0x4800_1018</code> points to a <em>register</em>. A register is special region
+of memory that controls a <em>peripheral</em>. A peripheral is a piece of electronics
+that sits right next to the processor within the microcontroller package and
+provides the processor extra functionality. After all, the processor, on its
+own, can only do math and logic.</p>
+<p>This particular register controls General Purpose Input/Output (GPIO) <em>pins</em>
+(GPIO <em>is</em> a peripheral) and can be used to <em>drive</em> each of those pins <em>low</em> or
+<em>high</em>.</p>
+<h2>An aside: LEDs, digital outputs and voltage levels</h2>
+<p>Drive? Pin? Low? High?</p>
+<p>A pin is a electrical contact. Our microcontroller has several of them and some
+of them are connected to LEDs. An LED, a Light Emitting Diode, will only emit
+light when voltage is applied to it with a certain polarity.</p>
+<p align="center">
+<img height=180 title="LED circuit" src="https://upload.wikimedia.org/wikipedia/commons/c/c9/LED_circuit.svg">
+</p>
+<p>Luckily for us, the microcontroller's pins are connected to the LEDs with the
+right polarity. All that we have to do is <em>output</em> some non-zero voltage through
+the pin to turn the LED on. The pins attached to the LEDs are configured as
+<em>digital outputs</em> and can only output two different voltage levels: &quot;low&quot;, 0
+Volts, or &quot;high&quot;, 3 Volts. A &quot;high&quot; (voltage) level will turn the LED on whereas
+a &quot;low&quot; (voltage) level will turn it off.</p>
+<p>These &quot;low&quot; and &quot;high&quot; states map directly to the concept of digital logic.
+&quot;low&quot; is <code>0</code> or <code>false</code> and &quot;high&quot; is <code>1</code> or <code>true</code>. This is why this pin
+configuration is known as digital output.</p>
+<hr />
+<p>OK. But how can one find out what this register does? Time to Read the Reference
+Manual!</p>
+<h1>RTRM: Reading The Reference Manual</h1>
+<p>I mentioned that the microcontroller has several pins. For convenience, these
+pins are grouped in &quot;ports&quot; of 16 pins. Each port is named with a letter: Port
+A, Port B, etc. and the pins within each port are named with numbers from 0
+to 15.</p>
+<p>The first thing we have to find out is which pin is connected to which LED. This
+information is in the STM32F3DISCOVERY <a href="http://www.st.com/resource/en/user_manual/dm00063382.pdf">User Manual</a> (You downloaded a copy,
+right?). In this particular section:</p>
+<blockquote>
+<p>Section 6.4 LEDs - Page 18</p>
+</blockquote>
+<p>The manual says:</p>
+<ul>
+<li><code>LD3</code>, the North LED, is connected to the pin <code>PE9</code>. <code>PE9</code> is the short form
+of: Pin 9 on Port E.</li>
+<li><code>LD7</code>, the East LED, is connected to the pin <code>PE11</code>.</li>
+</ul>
+<p>Up to this point, we know that we want to change the state of the pins PE9 and
+PE11 to turn the North/East LEDs on/off. These pins are part of Port E so we'll
+have to deal with the <code>GPIOE</code> peripheral.</p>
+<p>Each peripheral has a register &quot;block&quot; associated to it. A register block is a
+collection of registers allocated in contiguous memory. The address at which
+the register block starts is known as its base address. We need to figure out
+what's the base address of the <code>GPIOE</code> peripheral. That information is in the
+following section of the microcontroller <a href="http://www.st.com/resource/en/reference_manual/dm00043574.pdf">Reference Manual</a>:</p>
+<blockquote>
+<p>Section 3.2.2 Memory map and register boundary addresses - Page 51</p>
+</blockquote>
+<p>The table says that base address of the <code>GPIOE</code> register block is <code>0x4800_1000</code>.</p>
+<p>Each peripheral also has its own section in the documentation. Each of these
+sections ends with a table of the registers that the peripheral's register block
+contains. For the <code>GPIO</code> family of peripheral, that table is in:</p>
+<blockquote>
+<p>Section 11.4.12 GPIO register map - Page 243</p>
+</blockquote>
+<p>We are interested in the register that's at an offset of <code>0x18</code> from the base
+address of the <code>GPIOE</code> peripheral. According to the table, that would be the
+register <code>BSRR</code>.</p>
+<p>Now we need to jump to the documentation of that particular register. It's a few
+pages above in:</p>
+<blockquote>
+<p>Section 11.4.7 GPIO port bit set/reset register (GPIOx_BSRR) - Page 240</p>
+</blockquote>
+<p>Finally!</p>
+<p>This is the register we were writing to. The documentation says some interesting
+things. First, this register is write only ... so let's try reading its value
+<code>:-)</code>.</p>
+<p>We'll use GDB's &quot;examine&quot; command: <code>x</code>.</p>
+<pre><code>(gdb) next
+14              *(GPIOE_BSRR as *mut u32) = 1 &lt;&lt; 9;
+
+(gdb) x 0x48001018
+0x48001018:     0x00000000
+
+(gdb) next
+17              *(GPIOE_BSRR as *mut u32) = 1 &lt;&lt; 11;
+
+(gdb) x 0x48001018
+0x48001018:     0x00000000
+</code></pre>
+<p>Reading the register returns <code>0</code>. That matches what the documentation says.</p>
+<p>The other thing that the documentation says is that the bits 0 to 15 can be used
+to &quot;set&quot; the corresponding pin. That is bit 0 &quot;sets&quot; the pin 0. Here, &quot;set&quot;
+means outputting a &quot;high&quot; value on the pin.</p>
+<p>The documentation also says that bits 16 to 31 can be used to &quot;reset&quot; the
+corresponding pin. In this case, the bit 16 resets the pin number 0. As you may
+guess, &quot;reset&quot; means outputting a &quot;low&quot; value on the pin.</p>
+<p>Correlating that information with our program, all seems to be in agreement:</p>
+<ul>
+<li>
+<p>Writing <code>1 &lt;&lt; 9</code> (<code>BS9 = 1</code>)  to <code>BSRR</code>  sets <code>PE9</code> <em>high</em>. That turns the
+North LED <em>on</em>.</p>
+</li>
+<li>
+<p>Writing <code>1 &lt;&lt; 11</code> (<code>BS11 = 1</code>) to <code>BSRR</code> sets <code>PE11</code> <em>high</em>. That turns the
+East LED <em>on</em>.</p>
+</li>
+<li>
+<p>Writing <code>1 &lt;&lt; 25</code> (<code>BR9 = 1</code>) to <code>BSRR</code> sets <code>PE9</code> <em>low</em>. That turns the
+North LED <em>off</em>.</p>
+</li>
+<li>
+<p>Finally, writing <code>1 &lt;&lt; 27</code> (<code>BR11 = 1</code>) to <code>BSRR</code> sets <code>PE11</code> <em>low</em>. That
+turns the East LED <em>off</em>.</p>
+</li>
+</ul>
+<h1>(mis)Optimization</h1>
+<p>Reads/writes to registers are quite special. I may even dare to say that they
+are embodiment of side effects. In the previous example we wrote four different
+values to the same register. If you didn't know that address was a register, you
+may have simplified the logic to just write the final value <code>1 &lt;&lt; (11 + 16)</code>
+into the register.</p>
+<p>Actually, LLVM does not know this is a register and will merge the writes thus
+changing the behavior of our program. Let's check that really quick.</p>
+<pre><code>$ xargo build --target thumbv7em-none-eabihf --release
+
+$ arm-none-eabi-gdb target/thumbv7em-none-eabihf/release/registers
+
+(gdb) disassemble /m
+Dump of assembler code for function main:
+   0x080001da &lt;+0&gt;:     movw    r0, #4120       ; 0x1018
+   0x080001de &lt;+4&gt;:     mov.w   r1, #134217728  ; 0x8000000
+=&gt; 0x080001e2 &lt;+8&gt;:     movt    r0, #18432      ; 0x4800
+   0x080001e6 &lt;+12&gt;:    str     r1, [r0, #0]
+   0x080001e8 &lt;+14&gt;:    b.n     0x80001e8 &lt;main+14&gt;
+End of assembler dump.
+
+(gdb) stepi
+0x080001e6 in main ()
+
+(gdb) stepi
+0x080001e8 in main ()
+</code></pre>
+<p>The state of the LEDs didn't change this time! The <code>str</code> instruction is the one
+that writes a value to the register. Our &quot;debug&quot; program had four of them, one
+for each write to the register, but the &quot;release&quot; program only has one.</p>
+<p>We can check that using <code>objdump</code>:</p>
+<pre><code>$ arm-none-eabi-objdump -Cd target/thumbv7em-none-eabihf/debug/registers
+0800021c &lt;main&gt;:
+ 800021c:       b082            sub     sp, #8
+ 800021e:       e7ff            b.n     8000220 &lt;main+0x4&gt;
+ 8000220:       e7ff            b.n     8000222 &lt;main+0x6&gt;
+ 8000222:       f241 0018       movw    r0, #4120       ; 0x1018
+ 8000226:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 800022a:       f44f 7100       mov.w   r1, #512        ; 0x200
+ 800022e:       6001            str     r1, [r0, #0] &lt;--
+ 8000230:       e7ff            b.n     8000232 &lt;main+0x16&gt;
+ 8000232:       f241 0018       movw    r0, #4120       ; 0x1018
+ 8000236:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 800023a:       f44f 6100       mov.w   r1, #2048       ; 0x800
+ 800023e:       6001            str     r1, [r0, #0] &lt;--
+ 8000240:       e7ff            b.n     8000242 &lt;main+0x26&gt;
+ 8000242:       e7ff            b.n     8000244 &lt;main+0x28&gt;
+ 8000244:       f241 0018       movw    r0, #4120       ; 0x1018
+ 8000248:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 800024c:       f04f 7100       mov.w   r1, #33554432   ; 0x2000000
+ 8000250:       6001            str     r1, [r0, #0] &lt;--
+ 8000252:       e7ff            b.n     8000254 &lt;main+0x38&gt;
+ 8000254:       e7ff            b.n     8000256 &lt;main+0x3a&gt;
+ 8000256:       f241 0018       movw    r0, #4120       ; 0x1018
+ 800025a:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 800025e:       f04f 6100       mov.w   r1, #134217728  ; 0x8000000
+ 8000262:       6001            str     r1, [r0, #0] &lt;--
+ 8000264:       e7ff            b.n     8000266 &lt;main+0x4a&gt;
+ 8000266:       e7fe            b.n     8000266 &lt;main+0x4a&gt;
+</code></pre>
+<p>How do we prevent LLVM from misoptimizing our program? We use <em>volatile</em>
+operations instead of plain reads/writes:</p>
+<pre><code class="language-rust">pub fn main() -&gt; ! {
+    use core::ptr;
+
+    unsafe {
+        // A magic address!
+        const GPIOE_BSRR: u32 = 0x48001018;
+
+        // Turn on the &quot;North&quot; LED (red)
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; 9);
+
+        // Turn on the &quot;East&quot; LED (green)
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; 11);
+
+        // Turn off the &quot;North&quot; LED
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; (9 + 16));
+
+        // Turn on the &quot;East&quot; LED
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; (11 + 16));
+    }
+
+    loop {}
+}
+</code></pre>
+<p>If we look at the disassemble of this new program compiled in release mode:</p>
+<pre><code>$ arm-none-eabi-objdump -Cd target/thumbv7em-none-eabihf/release/registers
+
+080001da &lt;main&gt;:
+ 80001da:       f241 0018       movw    r0, #4120       ; 0x1018
+ 80001de:       f44f 7100       mov.w   r1, #512        ; 0x200
+ 80001e2:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 80001e6:       6001            str     r1, [r0, #0] &lt;--
+ 80001e8:       f44f 6100       mov.w   r1, #2048       ; 0x800
+ 80001ec:       6001            str     r1, [r0, #0] &lt;--
+ 80001ee:       f04f 7100       mov.w   r1, #33554432   ; 0x2000000
+ 80001f2:       6001            str     r1, [r0, #0] &lt;--
+ 80001f4:       f04f 6100       mov.w   r1, #134217728  ; 0x8000000
+ 80001f8:       6001            str     r1, [r0, #0] &lt;--
+ 80001fa:       e7fe            b.n     80001fa &lt;main+0x20&gt;
+</code></pre>
+<p>We see that the four writes (<code>str</code> instructions) are preserved. If you run it,
+you'll also see that behavior of the program is preserved.</p>
+<h1><code>0xBAAAAAAD</code> address</h1>
+<p>Not all the peripheral memory can be accessed. Look at this program.</p>
+<pre><code class="language-rust">pub fn main() -&gt; ! {
+    unsafe {
+        ptr::read_volatile(0x4800_1800 as *const u32);
+    }
+
+    loop {}
+}
+</code></pre>
+<p>This address is close to the <code>GPIOE_BSRR</code> address we used before but this
+address is &quot;invalid&quot;. Invalid in the sense that there's no register at this
+address.</p>
+<p>Now, let's try it. Make sure you have <code>itmdump</code> running.</p>
+<p>After executing the <code>read_volatile</code> statement, you should see this in
+<code>itmdump</code>'s console:</p>
+<pre><code># itmdump's console
+EXCEPTION HardFault @ PC=0x0800022a
+</code></pre>
+<p>We tried to do an invalid operation, reading memory that doesn't exist, so the
+processor raised an <em>exception</em>, a <em>hardware</em> exception.</p>
+<p>In most cases, exceptions are raised when the processor attempts to perform an
+invalid operation. Exceptions break the normal flow of a program and force the
+processor to execute an <em>exception handler</em>, which is just a
+function/subroutine.</p>
+<p>There are different kind of exceptions. Each kind of exception is raised by
+different conditions and each one is handled by a different exception handler.</p>
+<p>The <code>pg</code> crate provides a catch-all exception handler and that's what the
+processor executed upon encountering the &quot;invalid memory address&quot; exception.
+That handler is also what caused the <code>EXCEPTION</code> line to be printed to the ITM.</p>
+<p>This <code>EXCEPTION</code> line provides information about the exception. It tells us its
+kind: <code>HardFault</code> and which instruction caused the exception: the one at address
+<code>0x0800022a</code>.</p>
+<p>The exception handler also triggered a breakpoint (via <code>bkpt!()</code>) so the
+debugger should have halted your program while it was executing the exception
+handler.</p>
+<p>Let's disassemble the program around the bad instruction.</p>
+<pre><code>(gdb) disassemble /m 0x0800022a
+Dump of assembler code for function core::ptr::read_volatile&lt;u32&gt;:
+213     pub unsafe fn read_volatile&lt;T&gt;(src: *const T) -&gt; T {
+   0x0800021c &lt;+0&gt;:     sub     sp, #20
+   0x0800021e &lt;+2&gt;:     mov     r1, r0
+   0x08000220 &lt;+4&gt;:     str     r0, [sp, #16]
+   0x08000222 &lt;+6&gt;:     str     r1, [sp, #4]
+   0x08000224 &lt;+8&gt;:     b.n     0x8000226 &lt;core::ptr::read_volatile&lt;u32&gt;+10&gt;
+   0x08000226 &lt;+10&gt;:    ldr     r0, [sp, #16]
+   0x08000228 &lt;+12&gt;:    str     r0, [sp, #12]
+   0x0800022a &lt;+14&gt;:    ldr     r0, [r0, #0] &lt;--
+   0x0800022c &lt;+16&gt;:    str     r0, [sp, #8]
+   0x08000232 &lt;+22&gt;:    ldr     r0, [sp, #0]
+   0x08000234 &lt;+24&gt;:    add     sp, #20
+   0x08000236 &lt;+26&gt;:    bx      lr
+
+214         intrinsics::volatile_load(src)
+   0x0800022e &lt;+18&gt;:    str     r0, [sp, #0]
+   0x08000230 &lt;+20&gt;:    b.n     0x8000232 &lt;core::ptr::read_volatile&lt;u32&gt;+22&gt;
+</code></pre>
+<p>The exception was caused by a <code>ldr</code> instruction, a read instruction. The
+instruction tried to read the memory at the address indicated by the <code>r0</code>
+register. BTW, <code>r0</code> is a CPU (processor) register not a microcontroller
+register.</p>
+<p>Wouldn't it be nice if we could check what was the value of the <code>r0</code> register
+right at the instant at which the exception was raised? Well, we can!</p>
+<p>If you looked carefully at the GDB output right when the exception was hit, you
+probably saw this:</p>
+<pre><code>Program received signal SIGTRAP, Trace/breakpoint trap.
+f3::exception::default_handler (sf=0x20009fa0) at $F3/src/exception.rs:82
+</code></pre>
+<p>The exception handler we are in right now was called with an argument. Let's
+inspect that argument:</p>
+<pre><code>(gdb) p sf
+$5 = (cortex_m::StackFrame *) 0x20009fa8
+
+(gdb) p/x *sf
+$4 = cortex_m::StackFrame {
+  r0: 0x48001800,
+  r1: 0x48001800,
+  r2: 0xd,
+  r3: 0x40013800,
+  r12: 0x2,
+  lr: 0x8000217,
+  pc: 0x80001f4,
+  xpsr: 0x41000200
+}
+</code></pre>
+<p>This <code>StackFrame</code> struct contains the state of your program right before the
+exception was hit. There's an <code>r0</code> field in it. That's the value of <code>r0</code> right
+before the exception was raised. It contains the value <code>0x4800_1800</code> which is
+the invalid address we fed to the <code>read_volatile</code> function.</p>
+<h1>Spooky action at a distance</h1>
+<p><code>BSRR</code> is not the only register that can control the pins of Port E. The <code>ODR</code>
+register also lets you change the value of the pins. Furthermore, <code>ODR</code> also
+lets you retrieve the current output status of Port E.</p>
+<p><code>ODR</code> is documented in:</p>
+<blockquote>
+<p>Section 11.4.6 GPIO port output data register - Page 239</p>
+</blockquote>
+<p>Let's try this program:</p>
+<pre><code class="language-rust">#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    unsafe {
+        const GPIOE_BSRR: u32 = 0x4800_1018;
+        const GPIOE_ODR: u32 = 0x4800_1014;
+
+        iprintln!(&quot;ODR = 0x{:04x}&quot;,
+                  ptr::read_volatile(GPIOE_ODR as *const u16));
+
+        // Turn on the NORTH LED (red)
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; 9);
+
+        iprintln!(&quot;ODR = 0x{:04x}&quot;,
+                  ptr::read_volatile(GPIOE_ODR as *const u16));
+
+        // Turn on the EAST LED (green)
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; 11);
+
+        iprintln!(&quot;ODR = 0x{:04x}&quot;,
+                  ptr::read_volatile(GPIOE_ODR as *const u16));
+
+        // Turn off the NORTH LED
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; (9 + 16));
+
+        iprintln!(&quot;ODR = 0x{:04x}&quot;,
+                  ptr::read_volatile(GPIOE_ODR as *const u16));
+
+        // Turn off the EAST LED
+        ptr::write_volatile(GPIOE_BSRR as *mut u32, 1 &lt;&lt; (11 + 16));
+    }
+
+    loop {}
+}
+
+</code></pre>
+<p>If you run this program, you'll see:</p>
+<pre><code># itmdump's console
+ODR = 0x0000
+ODR = 0x0200
+ODR = 0x0a00
+ODR = 0x0800
+</code></pre>
+<p>Side effects! Although we are reading the same address multiple times without
+actually modifying it, we still see its value change every time <code>BSRR</code> is
+written to.</p>
+<h1>Type safe manipulation</h1>
+<p>The last register we were working with, <code>ODR</code>, had this in its documentation:</p>
+<blockquote>
+<p>Bits 16:31 Reserved, must be kept at reset value</p>
+</blockquote>
+<p>We are not supposed to write to those bits of the register or Bad Stuff May
+Happen.</p>
+<p>There's also the fact the registers have different read/write permissions. Some
+of them are write only, others can be read and wrote to and there must be others
+that are read only.</p>
+<p>Finally, directly working with hexadecimal addresses is error prone. You already
+saw that trying to access an invalid memory address causes an exception which
+disrupts the execution of our program.</p>
+<p>Wouldn't it be nice if we had an API to manipulate registers in a &quot;safe&quot; manner?
+Ideally, the API should encode these three points I've mentioned: No messing
+around with the actual addresses, should respect read/write permissions and
+should prevent modification of the reserved parts of a register.</p>
+<p>Well, we do! The <code>pg</code> crate contains a <code>peripheral</code> module that provides such
+API.</p>
+<p>Each register block is modeled as a <code>struct</code> where each field is a register.
+Each register is a different newtype over e.g. <code>u32</code> and exposes a combination
+of the following methods: <code>read</code>, <code>write</code> or <code>modify</code> according to its
+read/write permissions. Finally, these methods don't take primitive values like
+<code>u32</code>, instead they take yet another newtype that can be constructed using the
+builder pattern and that prevent the modification of the reserved parts of a
+register.</p>
+<p>The best way to get familiar with this API is to port our running example to it.</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+
+extern crate pg;
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    use pg::peripheral;
+
+    // Get mutable access to the GPIOE register block
+    // `unsafe` because this functions hands over (aliases) `&amp;mut-` references
+    let gpioe = unsafe { peripheral::gpioe_mut() };
+
+    // Turn on the North LED
+    gpioe.bsrr.write(|w| w.bs9(true));
+
+    // Turn on the East LED
+    gpioe.bsrr.write(|w| w.bs11(true));
+
+    // Turn off the North LED
+    gpioe.bsrr.write(|w| w.br9(true));
+
+    // Turn off the East LED
+    gpioe.bsrr.write(|w| w.br11(true));
+
+    loop {}
+}
+</code></pre>
+<p>First thing you notice: There are no magic addresses involved. Instead we use a
+more human friendly: <code>gpioe.bsrr</code> to refer to the <code>BSRR</code> register in the <code>GPIOE</code>
+register block.</p>
+<p>Then we have this <code>write</code> method that takes a closure. If the &quot;identity&quot; closure
+is used: <code>|w| w</code>, this method will set the register to its &quot;reset value&quot;, the
+value it had right after the microcontroller was powered on / reset. That value
+is <code>0x0</code> for the <code>BSRR</code> register. Since we want to write a non-zero value to the
+register, we use builder methods like <code>bs9</code> to set (<code>true</code>) or reset (<code>false</code>)
+some of the bits of the register value.</p>
+<p>Let's run this program! There's some interesting stuff we can do <em>while</em>
+debugging the program.</p>
+<p><code>gpioe</code> is a reference to the <code>GPIOE</code> register block. <code>print gpioe</code> will return
+the base address of the register block.</p>
+<pre><code>$ (gdb) print gpioe
+$1 = (f3::peripheral::gpio::Gpio *) 0x48001000
+</code></pre>
+<p>But if we instead <code>print *gpioe</code>, we'll get a &quot;full view&quot; of the register block.
+The value of each of its registers will be printed. I recommend setting <code>set print pretty on</code> first, though, to make the output more readable.</p>
+<pre><code>(gdb) set print pretty on
+
+(gdb) print *gpioe
+$2 = f3::peripheral::gpio::Gpio {
+  moder: f3::peripheral::gpio::Moder {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x55550000
+    }
+  },
+  otyper: f3::peripheral::gpio::Otyper {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  ospeedr: f3::peripheral::gpio::Ospeedr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  pupdr: f3::peripheral::gpio::Pupdr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  idr: f3::peripheral::gpio::Idr {
+    register: volatile_register::RO&lt;u32&gt; {
+      register: 0xcc
+    }
+  },
+  odr: f3::peripheral::gpio::Odr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  bsrr: f3::peripheral::gpio::Bsrr {
+    register: volatile_register::WO&lt;u32&gt; {
+      register: core::cell::UnsafeCell&lt;u32&gt; {
+        value: 0x0
+      }
+    }
+  },
+  lckr: f3::peripheral::gpio::Lckr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  afrl: f3::peripheral::gpio::Afrl {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  afrh: f3::peripheral::gpio::Afrh {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  brr: f3::peripheral::gpio::Brr {
+    register: volatile_register::WO&lt;u32&gt; {
+      register: core::cell::UnsafeCell&lt;u32&gt; {
+        value: 0x0
+      }
+    }
+  }
+}
+</code></pre>
+<p>All these newtypes and closures sound like they'd generate large, bloated
+programs but, if you actually compile the program in release mode with LTO
+enabled, you'll see that it produces exactly the same instructions that the
+&quot;unsafe&quot; version that used <code>write_volatile</code> and hexadecimal addresses did!</p>
+<pre><code>$ arm-none-eabi-objdump -Cd target/thumbv7em-none-eabihf/release/registers
+
+080001da &lt;main&gt;:
+ 80001da:       f241 0018       movw    r0, #4120       ; 0x1018
+ 80001de:       f44f 7100       mov.w   r1, #512        ; 0x200
+ 80001e2:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 80001e6:       6001            str     r1, [r0, #0]
+ 80001e8:       f44f 6100       mov.w   r1, #2048       ; 0x800
+ 80001ec:       6001            str     r1, [r0, #0]
+ 80001ee:       f04f 7100       mov.w   r1, #33554432   ; 0x2000000
+ 80001f2:       6001            str     r1, [r0, #0]
+ 80001f4:       f04f 6100       mov.w   r1, #134217728  ; 0x8000000
+ 80001f8:       6001            str     r1, [r0, #0]
+ 80001fa:       e7fe            b.n     80001fa &lt;main+0x20&gt;
+</code></pre>
+<p>The best part of all this is that I didn't have to write a single line of code
+in the <code>peripheral</code> module. All was automatically generated from a System View
+Description (SVD) file using the <a href="https://crates.io/crates/svd2rust">svd2rust</a> tool. This SVD file is actually an
+XML file that microcontroller vendors provide and that contains the register
+maps of their microcontrollers. The file contains the layout of register blocks,
+its base addresses, the read/write permissions of each register, the layout of
+the registers, whether a register has reserved bits and much more information.</p>
+<h1>The Linker Script</h1>
+<p>The more seasoned embedded engineers here are questioning where the linker
+script is. Well the .cargo/config file tells you the name of the linker
+script but not the location, it ends up being put inside of the build directory
+and is built by the <code>f3</code> crate. Thus it is in:
+<code>target/thumbv7em-none-eabihf/debug/build/f3-&lt;some hash&gt;/out</code>. The linker
+script is actually being generated by a <code>build.rs</code> file which is run by
+cargo on compilation.</p>
+<p>So lets take a look at the linker file we have been using:</p>
+<pre><code>MEMORY
+{
+  CCRAM : ORIGIN = 0x10000000, LENGTH = 8K
+  FLASH : ORIGIN = 0x08000000, LENGTH = 256K
+  RAM : ORIGIN = 0x20000000, LENGTH = 40K
+}
+
+ENTRY(_reset)
+
+SECTIONS
+{
+  .text ORIGIN(FLASH) :
+  {
+    /* Vector table */
+    LONG(ORIGIN(RAM) + LENGTH(RAM));
+    LONG(_reset + 1);
+    KEEP(*(.rodata._EXCEPTIONS));
+    _eexceptions = .;
+    /* Entry point: reset handler */
+    _reset = .;
+    *(.text._reset);
+
+    *(.text.*);
+    *(.rodata.*);
+  } &gt; FLASH
+  /DISCARD/ :
+  {
+    *(.ARM.exidx.*)
+    *(.bss.*)
+    *(.data.*)
+  }
+}
+
+/* HACK to make these symbols overrideable by _dependencies_ (they were
+   already overridable by the top crate), we declare them as undefined
+   (EXTERN) here. */
+EXTERN(__aeabi_memclr4);
+EXTERN(_default_exception_handler);
+EXTERN(_init);
+
+/* Exceptions */
+PROVIDE(_nmi = _default_exception_handler);
+PROVIDE(_hard_fault = _default_exception_handler);
+PROVIDE(_memmanage_fault = _default_exception_handler);
+PROVIDE(_bus_fault = _default_exception_handler);
+PROVIDE(_usage_fault = _default_exception_handler);
+PROVIDE(_svcall = _default_exception_handler);
+PROVIDE(_pendsv = _default_exception_handler);
+PROVIDE(_systick = _default_exception_handler);
+ASSERT(_eexceptions - ORIGIN(FLASH) == 0x40, &quot;exceptions not linked where expected&quot;);
+</code></pre>
+<p>It is pretty standard, and chanes depending on the options passed to f3 in the
+Cargo.toml file. For example, if we enable <code>interrupts</code> all of the interrupt
+vectors will get <code>_default_handlers</code> which can be overrided. This linker script
+is actually rather useful; however one day you may need to edit it yourself,
+we are not going to handle that right now though. For more information you
+should look at the <a href="http://github.com/japaric/f3">f3</a> repository.</p>
+<h1>Reading Button Inputs</h1>
+<p>So we can turn an LED on and off, but what about read a button? Luckily the
+STM32 Nucleo board has a built in button for us to use on Port C pin 13.
+This is the starter code.</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+extern crate pg;
+
+use pg::gpio::{Gpio, GpioBank, GpioDirection};
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    let led = Gpio::new(5, GpioBank::A, GpioDirection::Out);
+    let btn = Gpio::new(13, GpioBank::C, GpioDirection::In);
+
+    loop {
+        led.write(!btn.read());
+    }
+}
+</code></pre>
+<p>If you run the starter code, you will see that you can now press the button and
+then the LED will turn on. Now you have IO capabilities. There is nothing more
+complicated here under the covers than in the LED only examples earlier. I
+encourage you to look in the <code>pg</code> directory and grab the <a href="http://www.st.com/content/ccc/resource/technical/document/reference_manual/4a/19/6e/18/9d/92/43/32/DM00043574.pdf/files/DM00043574.pdf/jcr:content/translations/en.DM00043574.pdf">STM32F3 Reference
+Manual</a> and understand what is happening. It may also be useful to look at the
+docs for f3, cortex-m and svd2rust. To generate documetnation for all local
+crates you can run:</p>
+<pre><code>$ cargo doc
+</code></pre>
+<h1>What's left for you to explore</h1>
+<p>We have barely scratched the surface! There's lots of stuff left for you to
+explore:</p>
+<p>(Though I may be covering some of these topics in the future. Check the <a href="https://github.com/japaric/rust-discovery/issues?q=is:issue+is:open+label:new-topic">issue
+tracker</a>).</p>
+<h2>Direct Memory Access (DMA).</h2>
+<p>This peripheral is a kind of <em>asynchronous</em> <code>memcpy</code>. So far our programs have
+been pumping data, byte by byte, into peripherals like UART and I2C. This DMA
+peripheral can be used to perform bulk transfers of data. Either from RAM to
+RAM, from a peripheral, like a UART, to RAM or from RAM to a peripheral. You can
+schedule a DMA transfer, like read 256 bytes from USART1 into this buffer, leave
+it running in the background and then poll some register to see if it has
+completed so you can do other stuff while the transfer is ongoing.</p>
+<h2>Sleeping</h2>
+<p>All our programs have been continuously polling peripherals to see if there's
+anything that needs to be done. However, some times there's nothing to be done!
+At those times, the microcontroller should &quot;sleep&quot;.</p>
+<p>When the processor sleeps, it stops executing instructions and this saves power.
+It's almost always a good idea to save power so your microcontroller should be
+sleeping as much as possible. But, how does it know when it has to wake up to
+perform some action? &quot;Interrupts&quot; are one of the events that wake up the
+microcontroller but there are others and the <code>wfi</code> and <code>wfe</code> are the
+instructions that make the processor &quot;sleep&quot;.</p>
+<h2>Pulse Width Modulation (PWM)</h2>
+<p>In a nutshell, PWM is turning on something and then turning it off periodically
+while keeping some proportion (&quot;duty cycle&quot;) between the &quot;on time&quot; and the &quot;off
+time&quot;. When used on a LED with a sufficiently high frequency, this can be used
+to dim the LED. A low duty cycle, say 10% on time and 90% off time, will make
+the LED very dim wheres a high duty cycle, say 90% on time and 10% off time,
+will make the LED much brighter (almost as if it were fully powered).</p>
+<p>In general, PWM can be used to control how much <em>power</em> is given to some
+electric device. With proper (power) electronics between a microcontroller and
+an electrical motor, PWM can be used to control how much power is given to the
+motor thus it can be used to control its torque and speed. Then you can add an
+angular position sensor and you got yourself a closed loop controller that can
+control the position of the motor at different loads.</p>
+<h2>Digital input</h2>
+<p>We have used the microcontroller pins as digital outputs, to drive LEDs. But
+these pins can also be configured as digital inputs. As digital inputs, these
+pins can read the binary state of switches (on/off) or buttons (pressed/not
+pressed).</p>
+<p>(<em>spoilers</em> reading the binary state of switches / buttons is not as
+straightforward as it sounds ;-)</p>
+<h2>Sensor fusion</h2>
+<p>The STM32F3DISCOVERY contains three motion sensors: an accelerometer, a
+gyroscope and a magnetometer. On their own these measure: (proper) acceleration,
+angular speed and (the Earth's) magnetic field. But these magnitudes can be
+&quot;fused&quot; into something more useful: a &quot;robust&quot; measurement of the orientation of
+the board. Where robust means with less measurement error than a single sensor
+would be capable of.</p>
+<p>This idea of deriving more reliable data from different sources is known as
+sensor fusion.</p>
+<h2>Analog-to-Digital Converters (ADC)</h2>
+<p>There are a lots of digital sensors out there. You can use a protocol like I2C
+and SPI to read them. But analog sensors also exist! These sensors just output a
+voltage level that's proportional to the magnitude they are sensing.</p>
+<p>The ADC peripheral can be use to convert that &quot;analog&quot; voltage level, say <code>1.25</code>
+Volts,into a &quot;digital&quot; number, say in the <code>[0, 65535]</code> range, that the processor
+can use in its calculations.</p>
+<h2>Digital-to-Analog Converters (DAC)</h2>
+<p>As you might expect a DAC is exactly the opposite of ADC. You can write some
+digital value into a register to produce a voltage in the <code>[0, 3.3V]</code> range
+(assuming a <code>3.3V</code> power supply) on some &quot;analog&quot; pin. When this analog pin is
+connected to some appropriate electronics and the register is written to at some
+constant, fast rate (frequency) with the right values you can produce sounds or
+even music!</p>
+<h2>Real Time Clock (RTC)</h2>
+<p>This peripheral can be used to track time in &quot;human format&quot;. Seconds, minutes,
+hours, days, months and years. This peripheral handles the translation from
+&quot;ticks&quot; to these human friendly units of time. It even handles leap years and
+Daylight Save Time for you!</p>
+<h2>Other communication protocols</h2>
+<p>SPI, I2S, SMBUS, CAN, IrDA, Ethernet, USB, Bluetooth, etc.</p>
+<p>Different applications use different communication protocols. User facing
+applications usually have an USB connector because USB is an ubiquitous
+protocol in PCs and smartphones. Whereas inside cars you'll find plenty of CAN
+&quot;buses&quot;. Some digital sensors use SPI, others use I2C and others, SMBUS.
+Etcetera.</p>
+<h2>Interrupts</h2>
+<p>Interrupts are a key part of designing good embedded systems and make
+asyncronous operations possible. I put together a quick example of a
+pin change interrupt (<a href="https://github.com/cwoodall/stm32f303-rust-pinchange-interrupt">github</a>),
+but there are other interrupts to be made. One of the key limiting factors is
+improving tools and libraries supporting these interactions such as
+<a href="http://github.com/japaric/f3">f3</a> and
+<a href="https://github.com/cwoodall/stm32f303x-memory-map">stm32f303x-memory-map</a>/
+<a href="http://github.com/japaric/stm32f30x-memory-map">stm32f30x-memory-map</a>.</p>
+<h2>More Rust</h2>
+<p>I highly recommend learning more about Rust with the excellent resources that
+the community has put together such as <a href="https://doc.rust-lang.org/book/">The Rust Programming Language</a></p>
+<h1>General troubleshooting</h1>
+<h2>OpenOCD problems</h2>
+<h3>can't connect to OpenOCD - &quot;Error: open failed&quot;</h3>
+<h4>Symptoms</h4>
+<p>Upon trying to establish a <em>new connection</em> with the device you get an error
+that looks like this:</p>
+<pre><code>$ openocd -f (..)
+(..)
+Error: open failed
+in procedure 'init'
+in procedure 'ocd_bouncer'
+</code></pre>
+<h4>Cause + Fix</h4>
+<ul>
+<li>All: The device is not (properly) connected. Check the USB connection using
+<code>lsusb</code> or the Device Manager.</li>
+<li>Linux: You may not have enough permission to open the device. Try again with
+<code>sudo</code>. If that works, you can use <a href="03-setup/linux.html#udev%20rules">these instructions</a> to make OpenOCD work
+without root privilege.</li>
+<li>Windows: You are probably missing the ST-LINK USB driver. Installation
+instructions <a href="03-setup/windows.html#ST-LINK%20USB%20driver">here</a>.</li>
+</ul>
+<h3>can't connect to OpenOCD - &quot;Polling again in X00ms&quot;</h3>
+<h4>Symptoms</h4>
+<p>Upon trying to establish a <em>new connection</em> with the device you get an error
+that looks like this:</p>
+<pre><code>$ openocd -f (..)
+(..)
+Error: jtag status contains invalid mode value - communication failure
+Polling target stm32f3x.cpu failed, trying to reexamine
+Examination failed, GDB will be halted. Polling again in 100ms
+Info : Previous state query failed, trying to reconnect
+Error: jtag status contains invalid mode value - communication failure
+Polling target stm32f3x.cpu failed, trying to reexamine
+Examination failed, GDB will be halted. Polling again in 300ms
+Info : Previous state query failed, trying to reconnect
+</code></pre>
+<h4>Cause</h4>
+<p>The microcontroller may have get stuck in some tight infinite loop or it may be
+continuously raising an exception, e.g. the exception handler is raising an
+exception.</p>
+<h4>Fix</h4>
+<ul>
+<li>Close OpenOCD, if running</li>
+<li>Press and hold the reset (black) button</li>
+<li>Launch the OpenOCD command</li>
+<li>Now, release the reset button</li>
+</ul>
+<h3>OpenOCD connection lost - &quot;Polling again in X00ms&quot;</h3>
+<h4>Symptoms</h4>
+<p>A <em>running</em> OpenOCD session suddenly errors with:</p>
+<pre><code># openocd -f (..)
+Error: jtag status contains invalid mode value - communication failure
+Polling target stm32f3x.cpu failed, trying to reexamine
+Examination failed, GDB will be halted. Polling again in 100ms
+Info : Previous state query failed, trying to reconnect
+Error: jtag status contains invalid mode value - communication failure
+Polling target stm32f3x.cpu failed, trying to reexamine
+Examination failed, GDB will be halted. Polling again in 300ms
+Info : Previous state query failed, trying to reconnect
+</code></pre>
+<h4>Cause</h4>
+<p>The USB connection was lost.</p>
+<h4>Fix</h4>
+<ul>
+<li>Close OpenOCD</li>
+<li>Disconnect and re-connect the USB cable.</li>
+<li>Re-launch OpenOCD</li>
+</ul>
+<h3>Can't flash the device - &quot;Ignoring packet error, continuing...&quot;</h3>
+<h4>Symptoms</h4>
+<p>While flashing the device, you get:</p>
+<pre><code>$ arm-none-eabi-gdb $file
+Start address 0x8000194, load size 31588
+Transfer rate: 22 KB/sec, 5264 bytes/write.
+Ignoring packet error, continuing...
+Ignoring packet error, continuing...
+</code></pre>
+<h4>Cause</h4>
+<p>Closed <code>itmdump</code> while a program that &quot;printed&quot; to the ITM was running. The
+current GDB session will appear to work normally, just without ITM output but
+the next GDB session will error with the message that was shown in the previous
+section.</p>
+<p>Or, <code>itmdump</code> was called <strong>after</strong> the <code>monitor tpiu</code> was issued thus making
+<code>itmdump</code> delete the file / named-pipe that OpenOCD was writing to.</p>
+<h4>Fix</h4>
+<ul>
+<li>Close/kill GDB, OpenOCD and <code>itmdump</code></li>
+<li>Remove the file / named-pipe that <code>itmdump</code> was using (for example,
+<code>itm.txt</code>).</li>
+<li>Launch OpenOCD</li>
+<li>Then, launch <code>itmdump</code></li>
+<li>Then, launch the GDB session that executes the <code>monitor tpiu</code> command.</li>
+</ul>
+<h2>Cargo problems</h2>
+<h3>&quot;can't find crate for <code>core</code>&quot;</h3>
+<h4>Symptoms</h4>
+<pre><code>   Compiling volatile-register v0.1.2
+   Compiling rlibc v1.0.0
+   Compiling r0 v0.1.0
+error[E0463]: can't find crate for `core`
+
+error: aborting due to previous error
+
+error[E0463]: can't find crate for `core`
+
+error: aborting due to previous error
+
+error[E0463]: can't find crate for `core`
+
+error: aborting due to previous error
+
+Build failed, waiting for other jobs to finish...
+Build failed, waiting for other jobs to finish...
+error: Could not compile `r0`.
+
+To learn more, run the command again with --verbose.
+</code></pre>
+<h4>Cause</h4>
+<p>You are probably using <code>cargo</code> instead of <code>xargo</code>.</p>
+<h4>Fix</h4>
+<p>Use Xargo instead of Cargo!</p>
+<pre><code>$ xargo build --target thumbv7em-none-eabihf
+</code></pre>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+
+                
+
+            </div>
+
+            
+
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

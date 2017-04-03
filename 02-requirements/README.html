@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html" class="active"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Knowledge Requirements</h1>
+<p>The main &quot;knowledge requirement&quot; for following along with this tutorial is to
+know some Rust. To get &quot;some&quot; knowledge I recommend walking through the
+<a href="https://doc.rust-lang.org/book/guessing-game.html"><code>Guessing Game</code> tutorial</a>
+and reading through some of the official <a href="https://doc.rust-lang.org/book">The Rust Programming Language Book</a>.
+This should give you a sufficient base of knowledge.</p>
+<h1>Hardware Requirements</h1>
+<p>Here are the materials we will be using:</p>
+<ul>
+<li>A <a href="http://www.st.com/en/evaluation-tools/nucleo-f303re.html">STM32 NUCLEO-F303RE</a> development board. Which is a simple, but powerful
+Arduino-compatible development board.</li>
+</ul>
+<ul>
+<li>You can purchase this board from <a href="http://www.mouser.com/ProductDetail/STMicroelectronics/NUCLEO-F303RE/?qs=%2fha2pyFaduhMljemrTB2TiWNA%252b8NWaDxaSD%252bvQZGxBvfwZmOimB6MjCEAFnAFVgy">Mouser</a> or <a href="https://www.digikey.com/products/en?keywords=NUCLEO-F303RE">Digikey</a>.</li>
+</ul>
+<p align="center">
+<img title="STM32 NUCLEO-F303RE" src="assets/f3.jpg" />
+</p>
+<ul>
+<li>We'll refer to this board as &quot;F3&quot; throughout this book.</li>
+<li>Specs:
+<ul>
+<li>
+<p>A STM32F303RET6 microcontroller. This microcontroller has</p>
+</li>
+<li>
+<p>A single core ARM Cortex-M4F processor with hardware support for single
+precision floating point operations and a maximum clock frequency of 72 MHz.</p>
+</li>
+<li>
+<p>512 KiB of &quot;Flash&quot; memory. (1 KiB = 10<strong>24</strong> bytes)</p>
+</li>
+<li>
+<p>80 KiB of RAM.</p>
+</li>
+<li>
+<p>many &quot;peripherals&quot;: timers, GPIO, I2C, SPI, USART, etc.</p>
+</li>
+<li>
+<p>lots of &quot;pins&quot; that are exposed in the two lateral &quot;headers&quot;.</p>
+</li>
+<li>
+<p>Arduino-compatible headers.</p>
+</li>
+<li>
+<p><strong>IMPORTANT</strong> This microcontroller operates at (around) 3.3V.</p>
+</li>
+<li>
+<p>A second microcontroller: a STM32F103CBT. This microcontroller is actually
+part of an on-board programmer and debugger named ST-LINK and is connected to
+the USB port named &quot;USB ST-LINK&quot;.</p>
+</li>
+</ul>
+</li>
+<li><a href="http://www.st.com/content/ccc/resource/technical/document/datasheet/2c/6f/d7/64/1f/a3/4f/c9/DM00118585.pdf/files/DM00118585.pdf/jcr:content/translations/en.DM00118585.pdf">Datasheet</a></li>
+<li><a href="http://www.st.com/content/ccc/resource/technical/document/reference_manual/4a/19/6e/18/9d/92/43/32/DM00043574.pdf/files/DM00043574.pdf/jcr:content/translations/en.DM00043574.pdf">Reference Manual</a></li>
+<li><a href="http://www.st.com/content/ccc/resource/technical/document/user_manual/98/2e/fa/4b/e0/82/43/b7/DM00105823.pdf/files/DM00105823.pdf/jcr:content/translations/en.DM00105823.pdf">Nucleo User Manual</a></li>
+<li>One mini-B USB cables. One is required to make the STM32 NUCLEO board
+work.</li>
+</ul>
+<p align="center">
+<img title="mini-B USB cable" src="assets/usb-cable.jpg">
+</p>
+<blockquote>
+<p><strong>NOTE</strong> These are <strong>not</strong> the USB cables that ship with pretty much every
+Android phone; those are <em>micro</em> USB cables. Make sure you have the right
+thing!</p>
+</blockquote>
+<ul>
+<li>OPTIONAL. Bring some shields, LEDS, and wires to play around with!</li>
+</ul>
+<blockquote>
+<p><strong>FAQ</strong>: Wait, why do I need this specific hardware?</p>
+</blockquote>
+<p>It makes my life and yours much easier.</p>
+<p>The material is much, much more approachable if we don't have to worry about
+hardware differences. Trust me on this one.</p>
+<blockquote>
+<p><strong>FAQ</strong>: Can I follow this material with a different development board?</p>
+</blockquote>
+<p>Maybe? It depends mainly on two things: your previous experience with
+microcontrollers and/or whether there already exists a high level crate, like
+the <a href="https://github.com/japaric/f3">f3</a>, for your development board somewhere.</p>
+<p>Regardless, with a different development board, this text would lost most if not
+all its beginner friendliness and &quot;easy to follow&quot;-ness, IMO.</p>
+<p>If you have a different development board and you don't consider yourself a
+total beginner, you are better off reading the <a href="https://japaric.github.io/copper">Copper</a> book which approaches
+the Rust on microcontrollers topic in a bottom-up and device agnostic way. Or,
+maybe even just read the source of the <a href="https://github.com/japaric/f3">f3</a> crate.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="01-background/README.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="03-setup/README.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="01-background/README.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="03-setup/README.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

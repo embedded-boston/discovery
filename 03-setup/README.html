@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html" class="active"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Setting up your development environment</h1>
+<p>This section describes the common steps needed to set up rust and supporting tools. Before following this section you should follow the OS specific sections:</p>
+<ul>
+<li><a href="03-setup/linux.html">Linux</a></li>
+<li><a href="03-setup/macos.html">macOS</a></li>
+<li><a href="03-setup/windows.html">Windows</a></li>
+</ul>
+<h2>Requirements</h2>
+<p>We will use the following programs and tools. Where a minimum version is not
+specified, any recent version should work but we have listed the version we have
+tested.</p>
+<ol>
+<li>cargo &amp; <code>rustc</code> (&gt;= rust nightly 1.14).</li>
+<li><a href="https://crates.io/crates/xargo">Xargo</a> &gt;= 0.2.x.</li>
+<li><a href="https://crates.io/crates/itm"><code>itmdump</code></a> &gt;= 0.1.1</li>
+<li>OpenOCD &gt;=0.8. Tested version: 0.9.0</li>
+<li>An <code>arm-none-eabi-gcc</code> toolchain. Including:</li>
+</ol>
+<ul>
+<li><code>arm-none-eabi-gcc</code>. Tested versions: 4.8, 5.2 and 6.2</li>
+<li><code>arm-none-eabi-gdb</code>. Version 7.12 or newer highly recommended. Tested versions: 7.10, 7.11 and 7.12</li>
+</ul>
+<p>Next, follow OS-agnostic installation instructions for a few of the tools:</p>
+<h3><code>rustc</code> &amp; Cargo</h3>
+<p>The preferred way to install rust and cargo is to follow the instructions
+at https://www.rust-lang.org/ for your particular platform. You should use
+the instructions which install <code>rustup</code>. Afterwards we will need to download
+and install the <code>nightly</code> build which is required for embedded development
+for the time being. To do that:</p>
+<pre><code>$ rustup default nightly
+$ rustup component add rust-src # for Xargo later.
+</code></pre>
+<h3>Xargo</h3>
+<p>You can install Xargo in two different ways:</p>
+<ul>
+<li>By grabbing a <a href="https://github.com/japaric/xargo/releases">binary release</a> and placing it somewhere in your <code>$PATH</code>.
+<code>$HOME/.cargo/bin</code> is a good place to install it to. Do make sure that the
+binary release you &quot;installed&quot; actually works by executing the following
+command:</li>
+</ul>
+<pre><code>$ xargo -V
+xargo 0.2.0 (bd8ebc4 2016-10-16)
+cargo 0.13.0-nightly (a8baa5b 2016-10-15)
+</code></pre>
+<ul>
+<li>Or, by building it yourself with the following command:</li>
+</ul>
+<pre><code>$ cargo install xargo
+$ xargo -V
+</code></pre>
+<h3><code>itmdump</code></h3>
+<pre><code>$ cargo install itm
+</code></pre>
+<h3>OS specific instructions</h3>
+<p>If you have not followed the platorm specific instructions please follow them
+now:</p>
+<ul>
+<li><a href="03-setup/linux.html">Linux</a></li>
+<li><a href="03-setup/windows.html">Windows</a></li>
+<li><a href="03-setup/macos.html">macOS</a></li>
+</ul>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="02-requirements/README.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="03-setup/linux.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="02-requirements/README.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="03-setup/linux.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

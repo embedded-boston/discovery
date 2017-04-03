@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html" class="active"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Background</h1>
+<h2>What's a microcontroller?</h2>
+<p>A microcontroller is a <em>system</em> on a chip. Whereas your laptop is made up of
+several discrete components: a processor, RAM sticks, a hard drive, an ethernet
+port, etc.; a microcontroller has all those components built into a single
+&quot;chip&quot; or package. This makes it possible to build systems with minimal part
+count.</p>
+<h2>What can you do with a microcontroller?</h2>
+<p>Lots of things! Microcontrollers are the central part of systems known as
+<em>embedded</em> systems. These systems are everywhere but you don't usually notice
+them. These systems control the brakes of your car, wash your clothes, print
+your documents, keep you warm, keep you cool, optimize the fuel consumption of
+your car, etc.</p>
+<p>The main trait of these systems is that they operate without user intervention
+even if they expose a user interface like a washing machine does; most of their
+operation is done on their own.</p>
+<p>The other common trait of these systems is that they <em>control</em> a process. And
+for that these systems usually have one or more sensors and one or more
+actuators. For example, an HVAC system has several sensors, thermometers and
+humidy sensors spread across some area, and several actuators as well, heating
+elements and fans connected to ducts.</p>
+<h2>When should I use a microcontroller?</h2>
+<p>All these application I've mentioned, you can probably implement with a
+Raspberry Pi, a computer that runs Linux. Why should I bother with a
+microcontroller that operates without an OS? Sounds like it would be harder to
+develop a program.</p>
+<p>The main reason is cost. A microcontroller is much cheaper than a general
+purpose computer. Not only the microcontroller is cheaper; it also requires much
+less external electrical components to operate. This makes Printed Circuit
+Boards (PCB) smaller and cheaper to design and manufacture.</p>
+<p>The other big reason is power consumption. A microcontroller consumes orders of
+magnitude less power than a full blown processor. If your application will
+run on batteries that makes a huge difference.</p>
+<p>And last but not least: (hard) &quot;real time&quot; constraints. Some processes require
+their controllers to respond to some events within some time interval (e.g. a
+quadcopter/drone hit by a wind gust). If this &quot;deadline&quot; is not met, the process
+could end in catastrophic failure (e.g. the drone crashes to the ground). A
+general purpose computer  running a general purpose OS has many services running
+in the background. This makes it hard to guarantee execution of a program within
+tight time constraints.</p>
+<h2>When should I <em>not</em> use a microcontroller?</h2>
+<p>Where heavy computations are involved. To keep their power consumption low,
+microcontrollers have very limited computational resources available to them.
+For example, some microcontrollers don't even have hardware support for floating
+point operations. On those devices, performing a simple addition of single
+precision numbers can take hundreds of CPU cycles.</p>
+<h2>Why use Rust and not C?</h2>
+<p>Hopefully, I don't need to convince you here as you are probably familiar with
+the language differences between Rust and C. One point I do want to bring up is
+package management. C lacks an official, widely accepted package management
+solution whereas Rust has Cargo. This makes development <em>much</em> easier. And, IMO,
+easy package management encourages code reuse because libraries can be easily
+integrated into an application which is also a good thing as libraries get more
+&quot;battle testing&quot;.</p>
+<h2>Why should I not use Rust?</h2>
+<p>Or why should I prefer C over Rust?</p>
+<p>The C ecosystem is way more mature. Off the shelf solution for several problems
+already exist. If you need to control a time sensitive process, you can grab one
+of the existing commercial Real Time Operating Systems (RTOS) out there and
+solve your problem. There are no commercial, production-grade RTOSes in Rust yet
+so you would have to either create one yourself or try one of the ones that are
+in development.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="README.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="02-requirements/README.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="README.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="02-requirements/README.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

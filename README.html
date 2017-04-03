@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html" class="active">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Boston Embdded Systems Meetup: Bring and Blink</h1>
+<blockquote>
+<p>Discover the world of microcontrollers through <a href="https://www.rust-lang.org/en-US/">Rust</a>!</p>
+</blockquote>
+<p>This book is an edited version for the Boston Embedded Systems Meetup and is
+based on <a href="http://japaric.github.io/discovery">japaric's <code>discovery</code> book</a>.
+This book is for an &quot;introductory tutorial&quot; on microcontroller-based &quot;embedded
+systems&quot; that uses Rust as the teaching language rather than the usual C/C++.</p>
+<h2>Scope</h2>
+<p>The following topics will be covered in this tutorial:</p>
+<ul>
+<li>
+<p>How to write, build, flash and debug an &quot;embedded&quot; (Rust) program.</p>
+</li>
+<li>
+<p>How to make LEDs blink, print messages over JTAG using itm, and some basic
+Rust.</p>
+</li>
+</ul>
+<h2>Approach</h2>
+<ul>
+<li>
+<p>Beginner friendly. No previous experience with microcontrollers or embedded
+systems is required.</p>
+</li>
+<li>
+<p>Hands on. Plenty of exercises to put the theory into practice. <em>You</em> will be
+doing most of the work here.</p>
+</li>
+<li>
+<p>Tool centered. We'll make plenty use of tooling to ease development. &quot;Real&quot;
+debugging, GDB, and logging will be introduced early on. Using LEDs as a
+debugging mechanism has no place here.</p>
+</li>
+</ul>
+<h2>Non-goals</h2>
+<p>What's out of scope for this tutorial:</p>
+<ul>
+<li>
+<p>Teaching Rust in depth. There is plenty of material, and the officia <a href="https://doc.rust-lang.org/book/">Rust
+Programming Language Book</a> is a great place
+to start.</p>
+</li>
+<li>
+<p>Being a comprehensive introduction about electric circuit theory or
+electronics. We'll just cover the minimum required to understand how some
+devices work (if at all).</p>
+</li>
+<li>
+<p>Covering Rustic, low-level details. We won't be talking about linker scripts,
+the boot process or how to glue those two into a minimally working Rust
+program. The <a href="https://japaric.github.io/copper/">Copper</a> book has information on those topics though.</p>
+</li>
+<li>
+<p>Working with peripherals or anything more complicated than LEDs and basic
+Rust programs the <a href="https://japaric.github.io/discovery/">Discovery</a> book is a great place to go after this book and
+will keep you going. (Thanks japaric!)</p>
+</li>
+<li>
+<p>Being a general reference for programming microcontrollers. The intent is to
+get a handful of people up and running in a short period of time! Depth is
+not our aim!</p>
+</li>
+</ul>
+<h2>Thanks To:</h2>
+<ul>
+<li>Canopy: for allowing us to use their space.</li>
+<li>japaric: for writing a majority of the content.</li>
+</ul>
+<h3>Original Sponsors of the Discovery book</h3>
+<p>This tutorial is based on japric's Discovery book which was sponsored by:</p>
+<p align="center">
+<a href="http://integer32.com/">
+<img style="width: 50%" title="integer 32" src="assets/integer32.svg">
+</a>
+</p>
+<p>Many thanks to <a href="http://integer32.com/">integer 32</a> for sponsoring me to continue
+working on this book! Please give them lots of work (they do Rust consulting!)
+so they'll have no choice but to hire more Rustaceans &lt;3.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+
+                
+                    <a href="01-background/README.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+
+            
+                <a href="01-background/README.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

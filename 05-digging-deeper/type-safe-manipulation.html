@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html" class="active"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Type safe manipulation</h1>
+<p>The last register we were working with, <code>ODR</code>, had this in its documentation:</p>
+<blockquote>
+<p>Bits 16:31 Reserved, must be kept at reset value</p>
+</blockquote>
+<p>We are not supposed to write to those bits of the register or Bad Stuff May
+Happen.</p>
+<p>There's also the fact the registers have different read/write permissions. Some
+of them are write only, others can be read and wrote to and there must be others
+that are read only.</p>
+<p>Finally, directly working with hexadecimal addresses is error prone. You already
+saw that trying to access an invalid memory address causes an exception which
+disrupts the execution of our program.</p>
+<p>Wouldn't it be nice if we had an API to manipulate registers in a &quot;safe&quot; manner?
+Ideally, the API should encode these three points I've mentioned: No messing
+around with the actual addresses, should respect read/write permissions and
+should prevent modification of the reserved parts of a register.</p>
+<p>Well, we do! The <code>pg</code> crate contains a <code>peripheral</code> module that provides such
+API.</p>
+<p>Each register block is modeled as a <code>struct</code> where each field is a register.
+Each register is a different newtype over e.g. <code>u32</code> and exposes a combination
+of the following methods: <code>read</code>, <code>write</code> or <code>modify</code> according to its
+read/write permissions. Finally, these methods don't take primitive values like
+<code>u32</code>, instead they take yet another newtype that can be constructed using the
+builder pattern and that prevent the modification of the reserved parts of a
+register.</p>
+<p>The best way to get familiar with this API is to port our running example to it.</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+
+extern crate pg;
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -&gt; ! {
+    use pg::peripheral;
+
+    // Get mutable access to the GPIOE register block
+    // `unsafe` because this functions hands over (aliases) `&amp;mut-` references
+    let gpioe = unsafe { peripheral::gpioe_mut() };
+
+    // Turn on the North LED
+    gpioe.bsrr.write(|w| w.bs9(true));
+
+    // Turn on the East LED
+    gpioe.bsrr.write(|w| w.bs11(true));
+
+    // Turn off the North LED
+    gpioe.bsrr.write(|w| w.br9(true));
+
+    // Turn off the East LED
+    gpioe.bsrr.write(|w| w.br11(true));
+
+    loop {}
+}
+</code></pre>
+<p>First thing you notice: There are no magic addresses involved. Instead we use a
+more human friendly: <code>gpioe.bsrr</code> to refer to the <code>BSRR</code> register in the <code>GPIOE</code>
+register block.</p>
+<p>Then we have this <code>write</code> method that takes a closure. If the &quot;identity&quot; closure
+is used: <code>|w| w</code>, this method will set the register to its &quot;reset value&quot;, the
+value it had right after the microcontroller was powered on / reset. That value
+is <code>0x0</code> for the <code>BSRR</code> register. Since we want to write a non-zero value to the
+register, we use builder methods like <code>bs9</code> to set (<code>true</code>) or reset (<code>false</code>)
+some of the bits of the register value.</p>
+<p>Let's run this program! There's some interesting stuff we can do <em>while</em>
+debugging the program.</p>
+<p><code>gpioe</code> is a reference to the <code>GPIOE</code> register block. <code>print gpioe</code> will return
+the base address of the register block.</p>
+<pre><code>$ (gdb) print gpioe
+$1 = (f3::peripheral::gpio::Gpio *) 0x48001000
+</code></pre>
+<p>But if we instead <code>print *gpioe</code>, we'll get a &quot;full view&quot; of the register block.
+The value of each of its registers will be printed. I recommend setting <code>set print pretty on</code> first, though, to make the output more readable.</p>
+<pre><code>(gdb) set print pretty on
+
+(gdb) print *gpioe
+$2 = f3::peripheral::gpio::Gpio {
+  moder: f3::peripheral::gpio::Moder {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x55550000
+    }
+  },
+  otyper: f3::peripheral::gpio::Otyper {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  ospeedr: f3::peripheral::gpio::Ospeedr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  pupdr: f3::peripheral::gpio::Pupdr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  idr: f3::peripheral::gpio::Idr {
+    register: volatile_register::RO&lt;u32&gt; {
+      register: 0xcc
+    }
+  },
+  odr: f3::peripheral::gpio::Odr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  bsrr: f3::peripheral::gpio::Bsrr {
+    register: volatile_register::WO&lt;u32&gt; {
+      register: core::cell::UnsafeCell&lt;u32&gt; {
+        value: 0x0
+      }
+    }
+  },
+  lckr: f3::peripheral::gpio::Lckr {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  afrl: f3::peripheral::gpio::Afrl {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  afrh: f3::peripheral::gpio::Afrh {
+    register: volatile_register::RW&lt;u32&gt; {
+      register: 0x0
+    }
+  },
+  brr: f3::peripheral::gpio::Brr {
+    register: volatile_register::WO&lt;u32&gt; {
+      register: core::cell::UnsafeCell&lt;u32&gt; {
+        value: 0x0
+      }
+    }
+  }
+}
+</code></pre>
+<p>All these newtypes and closures sound like they'd generate large, bloated
+programs but, if you actually compile the program in release mode with LTO
+enabled, you'll see that it produces exactly the same instructions that the
+&quot;unsafe&quot; version that used <code>write_volatile</code> and hexadecimal addresses did!</p>
+<pre><code>$ arm-none-eabi-objdump -Cd target/thumbv7em-none-eabihf/release/registers
+
+080001da &lt;main&gt;:
+ 80001da:       f241 0018       movw    r0, #4120       ; 0x1018
+ 80001de:       f44f 7100       mov.w   r1, #512        ; 0x200
+ 80001e2:       f6c4 0000       movt    r0, #18432      ; 0x4800
+ 80001e6:       6001            str     r1, [r0, #0]
+ 80001e8:       f44f 6100       mov.w   r1, #2048       ; 0x800
+ 80001ec:       6001            str     r1, [r0, #0]
+ 80001ee:       f04f 7100       mov.w   r1, #33554432   ; 0x2000000
+ 80001f2:       6001            str     r1, [r0, #0]
+ 80001f4:       f04f 6100       mov.w   r1, #134217728  ; 0x8000000
+ 80001f8:       6001            str     r1, [r0, #0]
+ 80001fa:       e7fe            b.n     80001fa &lt;main+0x20&gt;
+</code></pre>
+<p>The best part of all this is that I didn't have to write a single line of code
+in the <code>peripheral</code> module. All was automatically generated from a System View
+Description (SVD) file using the <a href="https://crates.io/crates/svd2rust">svd2rust</a> tool. This SVD file is actually an
+XML file that microcontroller vendors provide and that contains the register
+maps of their microcontrollers. The file contains the layout of register blocks,
+its base addresses, the read/write permissions of each register, the layout of
+the registers, whether a register has reserved bits and much more information.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="05-digging-deeper/spooky-action-at-a-distance.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="05-digging-deeper/the-linker-script.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="05-digging-deeper/spooky-action-at-a-distance.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="05-digging-deeper/the-linker-script.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

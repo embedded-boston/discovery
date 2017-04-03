@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html" class="active"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Debug it</h1>
+<p>We are already inside a debugging session so let's debug our program.</p>
+<p>After the <code>load</code> command, our program is stopped at its <em>entry point</em>. This is
+indicated by the &quot;Start address 0x8000XXX&quot; part of GDB's output. The entry point
+is the part of a program that a processor / CPU will execute first.</p>
+<p>The starter project I've provided to you has some extra code that runs <em>before</em>
+the <code>main</code> function. At this time, we are not interested in that &quot;pre-main&quot;
+part so let's skip right to the beginning of the <code>main</code> function. We'll do that
+using a breakpoint:</p>
+<pre><code>(gdb) break main
+Breakpoint 1 at 0x80001e6: file $PWD/src/main.rs, line 9.
+
+(gdb) continue
+Continuing.
+Note: automatically using hardware breakpoints for read-only addresses.
+
+Breakpoint 1, blink::main ()
+    at /home/cwoodall/workspace/personal/discovery/src/04-blink/src/main.rs:19
+19      let mut state: bool = false;
+</code></pre>
+<p>Breakpoints can be used to stop the normal flow of a program. The <code>continue</code>
+command will let the program run free <em>until</em> it reaches a breakpoint. In this
+case, until it reaches the <code>main</code> function because there's a breakpoint there.</p>
+<p>Note that GDB output says &quot;Breakpoint 1&quot;. Remember that our processor can only
+use 6 breakpoints so it's a good idea to pay attention to these messages.</p>
+<p>For a nicer debugging experience, we'll be using GDB's Text User Interface
+(TUI). To enter into that mode, on the GDB shell enter the following command:</p>
+<pre><code>(gdb) layout src
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong> Apologies Windows users. The GDB shipped with the GNU ARM Embedded
+Toolchain doesn't support this TUI mode.</p>
+</blockquote>
+<p><img src="assets/gdb-layout-src.png" alt="GDB session" title="GDB TUI" /></p>
+<p>At any point you can leave the TUI mode using the following command:</p>
+<pre><code>(gdb) tui disable
+</code></pre>
+<p>OK. We are now at the beginning of <code>main</code>. We can advance the program statement
+by statement using the <code>step</code>  and <code>next</code> (steps over functions) commands. So
+let's use <code>next</code> three times that twice to reach the <code>loop {</code> statement.</p>
+<pre><code>(gdb) n
+15      let led: gpio::Gpio = gpio::Gpio::new(5, gpio::GpioBank::A, gpio::GpioDirection::Out);
+(gdb) n
+19      let mut state: bool = false;
+(gdb) n
+21      loop {
+</code></pre>
+<p>If you are not using the TUI mode, on each <code>next</code> or <code>step</code> call GDB will print
+back the current statement along with its line number.</p>
+<p>We are now &quot;on&quot; the <code>loop</code> statement; that statement hasn't been executed yet.
+This means that <code>led</code> and <code>state</code> are initialized. Let's inspect those
+stack/local variables using the <code>print</code> command:</p>
+<pre><code>(gdb) print led
+$1 = {
+  pin = 5 '\005',
+  bank = A
+}
+(gdb) print state
+$2 = false
+(gdb) print &amp;led
+$3 = (struct Gpio *) 0x20009fdc
+(gdb) print &amp; state
+$4 = (bool *) 0x20009fe3
+</code></pre>
+<p>Interestingly it prints the struct correctly!</p>
+<p>The command <code>print &amp;led</code> prints the address of the variable <code>led</code>. The interesting
+bit here is that GDB output shows the type of the reference: <code>struct Gpio*</code>, a
+pointer to an <code>i32</code> value. Another interesting thing is that the addresses of <code>led</code>
+and <code>state</code> are very close to each other.</p>
+<p>Instead of printing the local variables one by one, you can also use the <code>info locals</code> command:</p>
+<pre><code>(gdb) info locals
+state = false
+led = {
+  pin = 5 '\005',
+  bank = A
+}
+</code></pre>
+<p>OK. With another <code>step</code>, we'll be on top of the <code>loop {}</code> statement:</p>
+<pre><code>(gdb) s
+23          delay::ms(1_000);
+</code></pre>
+<p>And we are ready to start blinking (in just a second). We will use the
+<code>continue</code> command to start running the program.</p>
+<pre><code>(gdb) continue
+Continuing.
+</code></pre>
+<p>You should now see the led blinking on and off in 1 second intervals. Yay!</p>
+<p>We can also switch to the disassemble view with the <code>layout asm</code> command and
+advance one instruction at a time using <code>stepi</code>.</p>
+<blockquote>
+<p><strong>NOTE</strong> If you used the <code>step</code> command by mistake and GDB got stuck, you can
+unstuck it by hitting <code>Ctrl+C</code>.</p>
+</blockquote>
+<pre><code>(gdb) layout asm
+</code></pre>
+<p><img src="assets/gdb-layout-asm.png" alt="GDB session" title="GDB disassemble" /></p>
+<p>If you are not using the TUI mode, you can use the <code>disassemble /m</code> command to
+disassemble the program around the line you are currently at.</p>
+<pre><code>(gdb) disassemble /m
+Dump of assembler code for function led_roulette::main:
+9       pub fn main() -&gt; ! {
+   0x080001e6 &lt;+0&gt;:     sub     sp, #12
+   0x080001e8 &lt;+2&gt;:     b.n     0x80001ea &lt;led_roulette::main+4&gt;
+
+10          let y;
+11          let x = 42;
+   0x080001ea &lt;+4&gt;:     movs    r0, #42 ; 0x2a
+   0x080001ec &lt;+6&gt;:     str     r0, [sp, #4]
+
+12          y = x;
+   0x080001ee &lt;+8&gt;:     str     r0, [sp, #8]
+
+13
+14          loop {}
+=&gt; 0x080001f0 &lt;+10&gt;:    b.n     0x80001f2 &lt;led_roulette::main+12&gt;
+   0x080001f2 &lt;+12&gt;:    b.n     0x80001f2 &lt;led_roulette::main+12&gt;
+
+End of assembler dump.
+</code></pre>
+<p>See the arrow <code>=&gt;</code>? It shows the instruction the processor will execute next.</p>
+<p>If not inside the TUI mode, on each <code>stepi</code> command GDB will print the
+statement, the line number <em>and</em> the address of the instruction the processor
+will execute next.</p>
+<pre><code>(gdb) stepi
+0x080001f2      13          loop {}
+
+(gdb) stepi
+0x080001f2      13          loop {}
+</code></pre>
+<p>One last trick before we move to something more interesting. Enter the following
+commands into GDB:</p>
+<pre><code>(gdb) monitor reset halt
+Unable to match requested speed 1000 kHz, using 950 kHz
+Unable to match requested speed 1000 kHz, using 950 kHz
+adapter speed: 950 kHz
+target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0x01000000 pc: 0x08000040 msp: 0x2000a000
+(gdb) c
+Continuing.
+
+Breakpoint 1, blink::main ()
+    at /home/cwoodall/workspace/personal/discovery/src/04-blink/src/main.rs:19
+19      let mut state: bool = false;
+(gdb)
+</code></pre>
+<p>We are now back at the beginning of <code>main</code>!</p>
+<p><code>monitor reset halt</code> will reset the microcontroller and stop it right at the
+program entry point. The following <code>continue</code> command will let the program run
+freely until it reaches the <code>main</code> function that has a breakpoint on it.</p>
+<p>This combo is handy when you, by mistake, skipped over a part of the program
+that you were interested in inspecting. You can easily roll back the state of
+your program back to its very beginning.</p>
+<blockquote>
+<p><strong>The fine print</strong>: This <code>reset</code> command doesn't clear or touch RAM. That
+memory will retain its values from the previous run. That shouldn't be a
+problem tough, unless your program behavior depends of the value of
+<em>uninitialized</em> variables but that's the definition of Undefined Behavior
+(UB).</p>
+</blockquote>
+<p>We are done with this debug session. You can end it with the <code>quit</code> command.</p>
+<pre><code>(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [Remote target] will be detached.
+
+Quit anyway? (y or n) y
+Detaching from program: $PWD/target/thumbv7em-none-eabihf/debug/blink, Remote target
+Ending remote debugging.
+</code></pre>
+<p>Don't close OpenOCD though! We'll use it again and again later on. It's better
+just to leave it running.</p>
+<p>Now lets play around and get people up to speed! Next (if we have time) we will
+delve a little deeper and maybe even experiment with some inputs!</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="04-blink/flash-it.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="05-digging-deeper/README.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="04-blink/flash-it.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="05-digging-deeper/README.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>

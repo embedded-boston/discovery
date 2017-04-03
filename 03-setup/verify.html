@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li class="affix"><a href="README.html">Introduction</a></li><li><a href="01-background/README.html"><strong>1.</strong> Background</a></li><li><a href="02-requirements/README.html"><strong>2.</strong> Hardware/knowledge requirements</a></li><li><a href="03-setup/README.html"><strong>3.</strong> Setting up a development environment</a></li><li><ul class="section"><li><a href="03-setup/linux.html"><strong>3.1.</strong> Linux</a></li><li><a href="03-setup/windows.html"><strong>3.2.</strong> Windows</a></li><li><a href="03-setup/macos.html"><strong>3.3.</strong> macOS</a></li><li><a href="03-setup/verify.html" class="active"><strong>3.4.</strong> Verify the installation</a></li></ul></li><li><a href="04-blink/README.html"><strong>4.</strong> Blink An LED</a></li><li><ul class="section"><li><a href="04-blink/build-it.html"><strong>4.1.</strong> Build it</a></li><li><a href="04-blink/flash-it.html"><strong>4.2.</strong> Flash it</a></li><li><a href="04-blink/debug-it.html"><strong>4.3.</strong> Debug it</a></li></ul></li><li><a href="05-digging-deeper/README.html"><strong>5.</strong> Digging Deeper</a></li><li><ul class="section"><li><a href="05-digging-deeper/rtrm.html"><strong>5.1.</strong> RTRM</a></li><li><a href="05-digging-deeper/optimization.html"><strong>5.2.</strong> (mis)Optimization</a></li><li><a href="05-digging-deeper/bad-address.html"><strong>5.3.</strong> <code>0xBAAAAAAD</code> address</a></li><li><a href="05-digging-deeper/spooky-action-at-a-distance.html"><strong>5.4.</strong> Spooky action at a distance</a></li><li><a href="05-digging-deeper/type-safe-manipulation.html"><strong>5.5.</strong> Type safe manipulation</a></li><li><a href="05-digging-deeper/the-linker-script.html"><strong>5.6.</strong> The Linker Script</a></li></ul></li><li><a href="06-button-inputs/README.html"><strong>6.</strong> Buttons</a></li><li class="affix"><a href="explore.html">What's left for you to explore</a></li><li class="spacer"></li><li class="affix">Appendix</li><li class="affix"><a href="appendix/1-general-troubleshooting/README.html">General troubleshooting</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Verify the installation</h1>
+<p>Let's verify that all the tools were installed correctly.</p>
+<h2>Platform Specific</h2>
+<h3>Linux</h3>
+<h4>Verify permissions</h4>
+<p>Connect the F3 to your laptop using an USB cable. Be sure to connect the cable
+to the &quot;USB ST-LINK&quot; port, the USB port at the middle.</p>
+<p>The F3 should now appear as a USB device (file) in <code>/dev/bus/usb</code>. Let's find
+out how it got enumerated:</p>
+<pre><code>$ lsusb | grep -i stm
+Bus 003 Device 004: ID 0483:374b STMicroelectronics ST-LINK/V2.1
+    ^^^        ^^^
+</code></pre>
+<p>In my case, the F3 got connected to the bus #3 and got enumerated as the device
+#4. This means the file <code>/dev/bus/usb/003/004</code> <em>is</em> the F3. Let's check its
+permissions:</p>
+<pre><code>$ ls -l /dev/bus/usb/003/004
+crw-rw-r-- 1 root uucp 189, 262 Oct 27 00:00 /dev/bus/usb/003/004
+</code></pre>
+<p>The group should be <code>uucp</code> (or <code>dialout</code>). If it's not ... then check your <a href="03-setup/linux.html#udev%20rules">udev rules</a> and try
+re-loading them with:</p>
+<pre><code>$ sudo udevadm control --reload-rules
+</code></pre>
+<h2>All</h2>
+<h3>First OpenOCD connection</h3>
+<p>First, connect the F3 to your laptop using an USB cable. Connect the cable to
+USB port at the center of the F3, the one that's labeled &quot;USB ST-LINK&quot;.</p>
+<p>Two <em>red</em> LEDs should turn on right after connecting the USB cable to the board.</p>
+<p>Next, call this command:</p>
+<pre><code># *nix
+$ openocd -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg
+
+# Windows
+$ openocd -s C:\OpenOCD\share\scripts -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong> Windows users: <code>C:\OpenOCD</code> is the directory where you installed
+OpenOCD to.</p>
+</blockquote>
+<blockquote>
+<p><strong>IMPORTANT</strong> There is more than one hardware revision of the
+STM32F3DISCOVERY board. For older revisions, you'll need to change the
+&quot;interface&quot; argument to <code>-f interface/stlink-v2.cfg</code> (note: no <code>-1</code> at the
+end). Alternatively, older revisions can use <code>-f board/stm32f3discovery.cfg</code>
+instead of <code>-f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg</code>.</p>
+</blockquote>
+<p>You should see output like this:</p>
+<pre><code>Open On-Chip Debugger 0.9.0 (2016-04-27-23:18)
+Licensed under GNU GPL v2
+For bug reports, read
+        http://openocd.org/doc/doxygen/bugs.html
+Info : auto-selecting first available session transport &quot;hla_swd&quot;. To override use 'transport select &lt;transport&gt;'.
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+none separate
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : clock speed 950 kHz
+Info : STLINK v2 JTAG v27 API v2 SWIM v15 VID 0x0483 PID 0x374B
+Info : using stlink api v2
+Info : Target voltage: 2.914184
+Info : stm32f3x.cpu: hardware has 6 breakpoints, 4 watchpoints
+</code></pre>
+<p>(If you don't ... then check the <a href="appendix/1-general-troubleshooting/README.html">general troubleshooting</a> instructions.)</p>
+<p>And <code>openocd</code> will block. That's fine.</p>
+<p>Also, one of the red LEDs, the one closest to the USB port, should start
+oscillating between red light and green light.</p>
+<p>That's it! It works. You can now close/kill <code>openocd</code>.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="03-setup/macos.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="04-blink/README.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="03-setup/macos.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="04-blink/README.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>
