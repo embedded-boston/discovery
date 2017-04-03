@@ -4,7 +4,7 @@
 Alright, let's start by building the following application:
 
 <p align="center">
-<img src="http://i.imgur.com/41n82mp.mp4">
+<img src="http://i.imgur.com/41n82mp.gif">
 </p>
 
 We are going to start off with a high-level API to implement this very simple
