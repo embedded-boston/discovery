@@ -14,7 +14,12 @@ debugging it.
 
 Throughout this text we'll be using the starter code that's in the [tutorial-bring-and-blink-rust]
 repository. Make sure you always have the latest version of the master branch
-because this website tracks that branch.
+because this website tracks that branch. You can get using git with the
+following command:
+
+```
+$ git clone https://github.com/embedded-boston/tutorial-bring-and-blink-rust.git
+```
 
 The starter code is in the `src` directory of that repository. Inside that
 directory there more directories named after each chapter of this book. Most of
