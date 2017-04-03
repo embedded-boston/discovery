@@ -1,11 +1,42 @@
 # Registers
 
-It's time to explore what the `Led` API does under the hood.
+It's time to explore what the `Gpio` API does under the hood.
 
 In a nutshell, it just writes to some special memory regions. Go into the
-`07-registers` directory and let's run the starter code.
+`05-digging-deeper` directory and let's run the starter code.
 
 ``` rust
+#![no_std]
+#![no_main]
+
+extern crate pg;
+extern crate f3;
+
+use f3::peripheral;
+
+#[inline(never)]
+#[no_mangle]
+pub fn main() -> ! {
+    let gpioa = unsafe { peripheral::gpioa_mut() };
+    let rcc = unsafe { peripheral::rcc_mut() };
+
+    rcc.ahbenr.modify(|_, w| w.iopaen(true));
+    gpioa.moder.write(|w| w.moder5(0b01));
+
+    loop {
+        f3::delay::ms(1_000);
+        gpioa.bsrr.write(|w| w.bs5(true));
+        f3::delay::ms(1_000);
+        gpioa.bsrr.write(|w| w.br5(true));
+    }
+}
+```
+
+Wow I just a lower level abstraction, but this is essentially what the
+`Gpio` module does. To dig down deeper into the direct register accesses
+we need to ge a little farther into `unsafe` land.
+
+```
 #![no_std]
 #![no_main]
 
@@ -72,8 +103,5 @@ configuration is known as digital output.
 
 ---
 
-OK. But how can one find out what this register does? Time to RTRM!
-
-
-## Finding the linker file
-target/thumbv7em-none-eabihf/debug/build/f3-89053c6e8fb224bb/out
+OK. But how can one find out what this register does? Time to Read the Reference
+Manual!

@@ -1,105 +1,38 @@
-# LEDs, again
+# Reading Button Inputs
 
-In the last section, I gave you "initialized" peripherals (I initialized them
-before `main`). That's why just writing to `BSRR` was enough to control the
-LEDs. But, peripheral are not "initialized" right after the microcontroller
-boots.
-
-In this section, you'll have more "fun" with registers: You'll have to configure
-`GPIOE` pins as digital outputs so that you'll be able to drive LEDs again.
-
+So we can turn an LED on and off, but what about read a button? Luckily the
+STM32 Nucleo board has a built in button for us to use on Port C pin 13.
 This is the starter code.
 
 ``` rust
+#![no_std]
+#![no_main]
+extern crate pg;
+
+use pg::gpio::{Gpio, GpioBank, GpioDirection};
+
 #[inline(never)]
 #[no_mangle]
 pub fn main() -> ! {
-    let (gpioe, rcc) =
-        unsafe { (peripheral::gpioe_mut(), peripheral::rcc_mut()) };
+    let led = Gpio::new(5, GpioBank::A, GpioDirection::Out);
+    let btn = Gpio::new(13, GpioBank::C, GpioDirection::In);
 
-    // TODO initialize GPIOE
-
-    // Turn on all the LEDs in the compass
-    gpioe.odr.write(|w| {
-        w.odr8(true)
-            .odr9(true)
-            .odr10(true)
-            .odr11(true)
-            .odr12(true)
-            .odr13(true)
-            .odr14(true)
-            .odr15(true)
-    });
-
-    loop {}
+    loop {
+        led.write(!btn.read());
+    }
 }
 ```
 
-If you run the starter code, you'll see that nothing happens this time.
-Furthermore, if you print the `GPIOE` register block, you'll see that every
-register is "zeroed" even after the `gpioe.odr.write` statement was executed!
+If you run the starter code, you will see that you can now press the button and
+then the LED will turn on. Now you have IO capabilities. There is nothing more
+complicated here under the covers than in the LED only examples earlier. I
+encourage you to look in the `pg` directory and grab the [STM32F3 Reference
+Manual] and understand what is happening. It may also be useful to look at the
+docs for f3, cortex-m and svd2rust. To generate documetnation for all local
+crates you can run:
 
 ```
-(gdb) p/x *gpioe
-$1 = f3::peripheral::gpio::Gpio {
-  moder: f3::peripheral::gpio::Moder {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  otyper: f3::peripheral::gpio::Otyper {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  ospeedr: f3::peripheral::gpio::Ospeedr {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  pupdr: f3::peripheral::gpio::Pupdr {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  idr: f3::peripheral::gpio::Idr {
-    register: volatile_register::RO<u32> {
-      register: 0x0
-    }
-  },
-  odr: f3::peripheral::gpio::Odr {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  bsrr: f3::peripheral::gpio::Bsrr {
-    register: volatile_register::WO<u32> {
-      register: core::cell::UnsafeCell<u32> {
-        value: 0x0
-      }
-    }
-  },
-  lckr: f3::peripheral::gpio::Lckr {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  afrl: f3::peripheral::gpio::Afrl {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  afrh: f3::peripheral::gpio::Afrh {
-    register: volatile_register::RW<u32> {
-      register: 0x0
-    }
-  },
-  brr: f3::peripheral::gpio::Brr {
-    register: volatile_register::WO<u32> {
-      register: core::cell::UnsafeCell<u32> {
-        value: 0x0
-      }
-    }
-  }
-}
+$ cargo doc
 ```
+
+[STM32F3 Reference Manual]: http://www.st.com/content/ccc/resource/technical/document/reference_manual/4a/19/6e/18/9d/92/43/32/DM00043574.pdf/files/DM00043574.pdf/jcr:content/translations/en.DM00043574.pdf

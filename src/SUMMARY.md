@@ -16,9 +16,8 @@
     - [`0xBAAAAAAD` address](05-digging-deeper/bad-address.md)
     - [Spooky action at a distance](05-digging-deeper/spooky-action-at-a-distance.md)
     - [Type safe manipulation](05-digging-deeper/type-safe-manipulation.md)
+    - [Type safe manipulation](05-digging-deeper/the-linker-script.md)
 - [Buttons](06-button-inputs/README.md)
-    - [Power](06-button-inputs/power.md)
-    - [Configuration](06-button-inputs/configuration.md)
 [What's left for you to explore](explore.md)
 ---
 [Appendix]()
