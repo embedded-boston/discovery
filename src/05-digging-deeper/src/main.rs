@@ -2,26 +2,23 @@
 #![no_main]
 
 extern crate pg;
+extern crate f3;
+
+use f3::peripheral;
 
 #[inline(never)]
 #[no_mangle]
 pub fn main() -> ! {
-    unsafe {
-        // A magic address!
-        const GPIOE_BSRR: u32 = 0x48001018;
+    let gpioa = unsafe { peripheral::gpioa_mut() };
+    let rcc = unsafe { peripheral::rcc_mut() };
 
-        // Turn on the "North" LED (red)
-        *(GPIOE_BSRR as *mut u32) = 1 << 9;
+    rcc.ahbenr.modify(|_, w| w.iopaen(true));
+    gpioa.moder.write(|w| w.moder5(0b01));
 
-        // Turn on the "East" LED (green)
-        *(GPIOE_BSRR as *mut u32) = 1 << 11;
-
-        // Turn off the "North" LED
-        *(GPIOE_BSRR as *mut u32) = 1 << (9 + 16);
-
-        // Turn on the "East" LED
-        *(GPIOE_BSRR as *mut u32) = 1 << (11 + 16);
+    loop {
+        f3::delay::ms(1_000);
+        gpioa.bsrr.write(|w| w.bs5(true));
+        f3::delay::ms(1_000);
+        gpioa.bsrr.write(|w| w.br5(true));
     }
-
-    loop {}
 }
